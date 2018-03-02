@@ -1,0 +1,17 @@
+Notes:
+
+	Once the sticker is in view, it hovers/highlights
+	Once clicker, the video plays
+
+	Click again on the button when in view, the video pauses. 
+	There is an exit button on the corner to exit the frame. 
+	If the video finishes, exit automatically.
+
+
+	Extra features:
+	Share button, allows you to sign your name. 
+	Animated truck, as if it is moving. 
+
+
+
+	
