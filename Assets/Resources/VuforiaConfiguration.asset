@@ -8,21 +8,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d76b89ff4afc5a04195eab54bc63d331, type: 3}
+  m_Script: {fileID: -2067402452, guid: 1e108ae5f2133934f948edded555f03e, type: 3}
   m_Name: VuforiaConfiguration
   m_EditorClassIdentifier: 
   vuforia:
-    vuforiaLicenseKey: AYeUXJ3/////AAAAGZQMQHZBc0brrIOTPqSwzkmNZ4IevqXZvpxKACu1e3w66Nks2AsELc/gNjT0bVUGEqkoF346WccOwyY7f/INs5cVOWV7xgNnJPet2k1wW424s/vgmlXPnztqSfx+PyHEHhcgQdvoZ0YIjzZtFJdkOdhOzDXwZPWYHYTVO8HDz1cmBKcx8Y4O/RDSy4LX5JY2otui1aJIBHSIsSrKfX48iQlB8Go89TK06KSHbGiLjYIFtXrhPjUTuNO0ZPVwYDY9BvoF9S/ihxuqW7z99BpSdyGdN6i2fmXUGi7Ls//WQUOyIKJwEGfGI0woVjB9FwViMtpVLSZNd2u2T4buXxMYO9mHuGqh6bY618vBPJser3Hx
+    vuforiaLicenseKey: AfnoXjb/////AAAAmRTqgmA4j0BanHAYaXZGXbsfEjs74GVEjMgV8dgB6FnpuwF4rNiUo8oxl1XlNCDJJAhDKT3BqHkJizRwhR6vBqmSHVZ2Ukb2O/U90lwI8xNmliG+snga5FMUt8n1KfziOjKLntpSrSxXOmFNDv/UCFg2KnGTj87hdGbJzk8t9WVA+E4VaX7KLz5MMve2ukpBZKwz+R67U7/u5fSQdEP8sr4iRGzoJdeIcanvF9m/lSRAjcvwffuDTXwaM94EmjSN1Q4vc+7+P/s+0vasfvtEeyu+EWhMyj3ALd00uf3+fZTvKRawcB7iIyt0p/Gss8+yPczdBrVabI64cgLS4Vy5Zc2rQ5QvQvUAsdTb22yFW6pZ
+    ufoLicenseKey: QVVibm1HSC8vLy8vQUFBQUtIa20reDA0bGtlY2dJKzhpR2x0MHdxSjRPNDRBc2hOcjdMNkdVS1dTRGw4Lzg0dUdhTGlNbklrNmhpc0l4K2l2NmpPQXB4ajRGaE56OXNnSERzbkpCenNRcnJlcmhHZVM3UWFuQmhGZ09QM0c5UWY4NCszTVZnT0VTekJQQkRUbDU0MUtkMjZCZDdEbUlma1Rrdkg4UHhoUitOOFhydmdMYmRLS1hlbWpNaS8yRzhNS05uNXJ4WVNacHdmRkN1UU5uZ0lGR1FlUENaN01CaXBNN1JtQUNTZ0EyZTdvZ1ZFUjY3NkpWV0U4QTkzU0Vnd2czT3AvdHB1ZU83WU5ZbmVjQ3lOdW03dFUyWE1PalJJOGVSajhweHdHeXNZSjlxV2RGdjgzTlNKZksrRXdRLzViOU16dGduek85M3dIRDUrRFJjVzJ5eHNoV0ZvRFhnZkM3U2lndE1hNXB6bnNuRXNSMVF2UzNiNEpsN1E=
     delayedInitialization: 0
-    cameraDeviceModeSetting: -1
+    cameraDeviceModeSetting: -2
     maxSimultaneousImageTargets: 1
     maxSimultaneousObjectTargets: 1
-    useDelayedLoadingObjectTargets: 1
+    useDelayedLoadingObjectTargets: 0
     cameraDirection: 0
     mirrorVideoBackground: 0
   digitalEyewear:
     cameraOffset: 0.06
-    distortionRenderingMode: 2
     distortionRenderingLayer: 31
     eyewearType: 0
     stereoFramework: 0
@@ -44,25 +44,29 @@ MonoBehaviour:
       ContainsMagnet: 0
   databaseLoad:
     dataSetsToLoad:
-    - SeniorThesisTarget
+    - VuforiaMars_Images
+    - VuforiaMars_VuMark
     dataSetsToActivate:
-    - SeniorThesisTarget
+    - VuforiaMars_Images
+    - VuforiaMars_VuMark
   videoBackground:
     clippingMode: 0
-    matteShader: {fileID: 4800000, guid: f84e93cca971cda47a225f4c6a4156c9, type: 3}
+    numDivisions: 2
+    videoBackgroundShader: {fileID: 15311, guid: 0000000000000000f000000000000000,
+      type: 0}
+    matteShader: {fileID: 15310, guid: 0000000000000000f000000000000000, type: 0}
     videoBackgroundEnabled: 1
-  smartTerrainTracker:
-    autoInitTracker: 0
-    autoStartTracker: 0
-    autoInitBuilder: 0
-    sceneUnitsToMillimeter: 0
   deviceTracker:
     autoInitTracker: 0
     autoStartTracker: 0
+    trackingMode: 0
     posePrediction: 0
     modelCorrectionMode: 0
     modelTransformEnabled: 0
     modelTransform: {x: 0, y: 0.1, z: -0.1}
+  smartTerrain:
+    autoInitTracker: 0
+    autoStartTracker: 0
   webcam:
     deviceNameSetInEditor: 
     flipHorizontally: 0

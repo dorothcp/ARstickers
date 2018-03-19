@@ -1,25 +1,37 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Vuforia;
 
-[RequireComponent (typeof(AudioSource))]
+public class Video : MonoBehaviour {
 
+    bool isEnabled;
+    public Color isOn;
+    public Color ifOff;
+    public Renderer MaterialRend;
+    void Start()
+    {
+        isEnabled = false;
+        DetermineColor();
 
-public class video : MonoBehaviour {
+    }
 
-	public MovieTexture movie;
+    public void ToggleVideo()
+    {
+        isEnabled = !isEnabled;
+        DetermineColor();
+    }
 
-	// Use this for initialization
-	void Start ()
-	{
+    void DetermineColor()
+    {
 
-		// this line of code will make the Movie Texture begin playing
-		((MovieTexture)GetComponent<Renderer>().material.mainTexture).Play();
-	
+        if (isEnabled)
+        {
+            MaterialRend.material.color = isOn;
+        }
+        else
+        {
+            MaterialRend.material.color = ifOff;
 
-
-
-	
-	}
+        }
+    }
 }
