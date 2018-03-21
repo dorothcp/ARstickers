@@ -179,7 +179,7 @@ PlayerSettings:
     serializedVersion: 2
     m_Bits: 238
   iPhoneSdkVersion: 988
-  iOSTargetOSVersionString: 7.0
+  iOSTargetOSVersionString: 9.0
   tvOSSdkVersion: 0
   tvOSRequireExtendedGameController: 0
   tvOSTargetOSVersionString: 9.0
@@ -695,8 +695,8 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: 
-    4: VUFORIA_IOS_SETTINGS
+    1: dUI_DoozyUI
+    4: VUFORIA_IOS_SETTINGS;dUI_DoozyUI
     7: VUFORIA_ANDROID_SETTINGS;dUI_DoozyUI
     14: VUFORIA_WSA_SETTINGS
   platformArchitecture: {}
