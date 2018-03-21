@@ -5,33 +5,26 @@ using UnityEngine;
 public class Video : MonoBehaviour {
 
     bool isEnabled;
-    public Color isOn;
-    public Color ifOff;
-    public Renderer MaterialRend;
+    public Animator anim;
     void Start()
     {
         isEnabled = false;
-        DetermineColor();
 
     }
 
     public void ToggleVideo()
     {
-        isEnabled = !isEnabled;
-        DetermineColor();
+            isEnabled = !isEnabled;
     }
 
-    void DetermineColor()
+    private void OnEnable()
     {
+        anim.SetBool("isEnabled", true);
 
-        if (isEnabled)
-        {
-            MaterialRend.material.color = isOn;
-        }
-        else
-        {
-            MaterialRend.material.color = ifOff;
+    }
+    private void OnDisable()
+    { 
+        anim.SetBool("isEnabled", false);
 
-        }
     }
 }
