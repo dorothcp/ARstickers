@@ -23,11 +23,11 @@ public class RaycastPlayVideo : MonoBehaviour {
                 {
                     if (HitInfo.collider.tag == "Video")
                     {
-                        Video v = HitInfo.collider.GetComponent<Video>();
+                        video v = HitInfo.collider.GetComponent<video>();
 
                         if (v !=null)
                         {
-                            v.ToggleVideo();
+                            v.OpenVideo();
                         }
                     }
                 }

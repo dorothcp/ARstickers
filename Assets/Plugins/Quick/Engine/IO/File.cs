@@ -1,7 +1,7 @@
-// Copyright (c) 2016 - 2018 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2017 Doozy Entertainment / Marlink Trading SRL and Ez Entertainment / Ez Entertainment SRL. All Rights Reserved.
+// This code is a collaboration between Doozy Entertainment and Ez Entertainment and is not to be used in any other assets other then the ones created by their respective companies.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
-
 
 using System;
 using System.Collections.Generic;
@@ -39,14 +39,14 @@ namespace QuickEngine.IO
         public static string GetAbsoluteDirectoryPath(string directoryName, bool debug = false)
         {
             string[] directoryPath = Directory.GetDirectories(Application.dataPath, directoryName, SearchOption.AllDirectories);
-            if(directoryPath == null)
+            if (directoryPath == null)
             {
-                if(debug) { Debug.LogError("[QuickEngine.IO] You searched for the [" + directoryName + "] folder, but no folder with that name exists in the current project."); }
+                if (debug) { Debug.LogError("[QuickEngine.IO] You searched for the [" + directoryName + "] folder, but no folder with that name exists in the current project."); }
                 return "ERROR";
             }
-            else if(directoryPath.Length > 1)
+            else if (directoryPath.Length > 1)
             {
-                if(debug) { Debug.LogWarning("[QuickEngine.IO] You searched for the [" + directoryName + "] folder. There are " + directoryPath.Length + " folders with that name. Returned the folder location for the first one, but it might not be the one you're looking for. Give the folder you are looking for an unique name to avoid any issues."); }
+                if (debug) { Debug.LogWarning("[QuickEngine.IO] You searched for the [" + directoryName + "] folder. There are " + directoryPath.Length + " folders with that name. Returned the folder location for the first one, but it might not be the one you're looking for. Give the folder you are looking for an unique name to avoid any issues."); }
             }
             return directoryPath[0];
         }
@@ -61,7 +61,6 @@ namespace QuickEngine.IO
             return directoryPath;
         }
 
-#if !(UNITY_5_6 && UNITY_WINRT)
         public static void WriteFile<T>(string filePath, T obj, Action<FileStream, T> serializeMethod)
         {
             CreateDirectory(filePath);
@@ -69,7 +68,6 @@ namespace QuickEngine.IO
             serializeMethod(stream, obj);
             stream.Close();
         }
-#endif
 
         public static void Delete(string path)
         {
@@ -111,9 +109,9 @@ namespace QuickEngine.IO
         {
             listOfStrings = new List<string>();
             fileInfoArray = GetFiles(directoryPath);
-            if(fileInfoArray != null)
+            if (fileInfoArray != null)
             {
-                for(int i = 0; i < fileInfoArray.Length; i++) { listOfStrings.Add(fileInfoArray[i].Name.Replace(fileInfoArray[i].Extension, "")); }
+                for (int i = 0; i < fileInfoArray.Length; i++) { listOfStrings.Add(fileInfoArray[i].Name.Replace(fileInfoArray[i].Extension, "")); }
                 listOfStrings.Sort();
             }
             return listOfStrings.ToArray();
@@ -126,9 +124,9 @@ namespace QuickEngine.IO
         {
             listOfStrings = new List<string>();
             fileInfoArray = GetFiles(directoryPath, fileExtension);
-            if(fileInfoArray != null)
+            if (fileInfoArray != null)
             {
-                for(int i = 0; i < fileInfoArray.Length; i++) { listOfStrings.Add(fileInfoArray[i].Name.Replace(fileInfoArray[i].Extension, "")); }
+                for (int i = 0; i < fileInfoArray.Length; i++) { listOfStrings.Add(fileInfoArray[i].Name.Replace(fileInfoArray[i].Extension, "")); }
                 listOfStrings.Sort();
             }
             return listOfStrings.ToArray();
@@ -150,9 +148,9 @@ namespace QuickEngine.IO
         {
             listOfStrings = new List<string>();
             directoryInfoArray = GetDirectories(directoryPath);
-            if(directoryInfoArray != null)
+            if (directoryInfoArray != null)
             {
-                for(int i = 0; i < directoryInfoArray.Length; i++) { listOfStrings.Add(directoryInfoArray[i].Name); }
+                for (int i = 0; i < directoryInfoArray.Length; i++) { listOfStrings.Add(directoryInfoArray[i].Name); }
                 listOfStrings.Sort();
             }
             return listOfStrings.ToArray();

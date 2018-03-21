@@ -68,7 +68,7 @@ namespace QuickEngine.Extensions
         /// <param name="v2">The Vector2.</param>
         /// <param name="decimals">Number of decimals.</param>
         /// <returns></returns>
-        public static string ToString(this Vector2 v2, int decimals = 0) { return "(" + Math.Round(v2.x, decimals) + ", " + Math.Round(v2.y, decimals) + ")"; }
+        public static string ToString(this Vector2 v2, int decimals = 0) { return v2.Round(decimals).ToString(); }
         /// <summary>
         /// Returns a Vector3 to a string in X, Y format.
         /// </summary>
@@ -136,14 +136,14 @@ namespace QuickEngine.Extensions
         /// <param name="v3">The Vector3.</param>
         /// <param name="decimals">Number of decimals.</param>
         /// <returns></returns>
-        public static Vector3 Round(this Vector3 v3, int decimals = 1) { return new Vector3((float)Math.Round(v3.x, decimals), (float)Math.Round(v3.y, decimals), (float)Math.Round(v3.z, decimals)); }
+        public static Vector3 Round(this Vector3 v3, int decimals = 1) { return new Vector3((float)Math.Round(v3.x, decimals), (float)Math.Round(v3.y, decimals)); }
         /// <summary>
         /// Returns a Vector3 to a string in X, Y format, rounded up to the set number of decimals.
         /// </summary>
         /// <param name="v3">The Vector3.</param>
         /// <param name="decimals">Number of decimals.</param>
         /// <returns></returns>
-        public static string ToString(this Vector3 v3, int decimals = 0) { return "(" + Math.Round(v3.x, decimals) + ", " + Math.Round(v3.y, decimals) + ", " + Math.Round(v3.z, decimals) + ")"; }
+        public static string ToString(this Vector3 v3, int decimals = 0) { return v3.Round(decimals).ToString(); }
         /// <summary>
         /// Returns a Vector3 to a string in X, Y format.
         /// </summary>

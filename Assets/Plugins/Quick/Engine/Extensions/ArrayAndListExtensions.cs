@@ -142,51 +142,5 @@ namespace QuickEngine.Extensions
             builder.Append(list[list.Count - 1].ToString());
             return builder.ToString();
         }
-		
-		/// <summary>
-        /// Joins all the elements of the array into a string separated by the given separator character.
-        /// </summary>
-        /// <typeparam name="T">Array Type.</typeparam>
-        /// <param name="array">The array.</param>
-        /// <param name="separator">String separator.</param>
-        /// <returns></returns>
-        public static string ToString<T>(this T[] array, char separator)
-        {
-            if(array.IsNullOrEmpty())
-            {
-                return string.Empty;
-            }
-            StringBuilder builder = new StringBuilder();
-            for(int i = 0; i < array.Length - 1; i++)
-            {
-                builder.Append(array[i].ToString());
-                builder.Append(separator);
-            }
-            builder.Append(array[array.Length - 1].ToString());
-            return builder.ToString();
-        }
-
-        /// <summary>
-        /// Joins all the elements of the list into a string separated by the given separator character.
-        /// </summary>
-        /// <typeparam name="T">List Type.</typeparam>
-        /// <param name="list">The list.</param>
-        /// <param name="separator">String separator.</param>
-        /// <returns></returns>
-        public static string ToString<T>(this List<T> list, char separator)
-        {
-            if(list.IsNullOrEmpty())
-            {
-                return string.Empty;
-            }
-            StringBuilder builder = new StringBuilder();
-            for(int i = 0; i < list.Count - 1; i++)
-            {
-                builder.Append(list[i].ToString());
-                builder.Append(separator);
-            }
-            builder.Append(list[list.Count - 1].ToString());
-            return builder.ToString();
-        }
     }
 }

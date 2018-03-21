@@ -1,16 +1,14 @@
-// Copyright (c) 2016 - 2018 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2017 Doozy Entertainment / Marlink Trading SRL and Ez Entertainment / Ez Entertainment SRL. All Rights Reserved.
+// This code is a collaboration between Doozy Entertainment and Ez Entertainment and is not to be used in any other assets other then the ones created by their respective companies.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Security;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
-using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,7 +22,7 @@ namespace QuickEditor
         /// <param name="clip">The AudioClip you want to play</param>
         public static void PlayAudioClip(AudioClip clip)
         {
-            if(clip == null) { return; }
+            if (clip == null) { return; }
             Assembly unityEditorAssembly = typeof(AudioImporter).Assembly;
             Type audioUtilClass = unityEditorAssembly.GetType("UnityEditor.AudioUtil");
             MethodInfo method = audioUtilClass.GetMethod
@@ -55,7 +53,7 @@ namespace QuickEditor
                 );
             method.Invoke(null, new object[] { });
         }
-
+        
         /// <summary>
         /// Created an unlinked copy of a prefab in the current scene, with the specified gameObjectName.
         /// </summary>
@@ -65,7 +63,7 @@ namespace QuickEditor
         public static void CreateGameObjectFromPrefab(string prefabPath, string prefabName, string gameObjectName)
         {
             var prefab = AssetDatabase.LoadAssetAtPath(prefabPath + prefabName + ".prefab", typeof(GameObject));
-            if(prefab == null) { Debug.LogError("Could not find the " + prefabName + " prefab. It should be at " + prefabPath); return; }
+            if (prefab == null) { Debug.LogError("[Doozy] Could not find the " + prefabName + " prefab. It should be at " + prefabPath); return; }
             var go = UnityEngine.Object.Instantiate(prefab) as GameObject;
             go.name = gameObjectName;
             Undo.RegisterCreatedObjectUndo(go, "Created the '" + go.name + "' gameObject from the '" + prefabName + "' prefab");
@@ -77,7 +75,12 @@ namespace QuickEditor
         /// </summary>
         public static void AddScriptingDefineSymbol(string symbol)
         {
-            AddScriptingDefineSymbol(symbol, GetActiveBuildTargetGroup());
+            string currentDefinedSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(GetActiveBuildTargetGroup());
+            if (currentDefinedSymbols.Contains(symbol) == false)
+            {
+                currentDefinedSymbols += ";" + symbol;
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(GetActiveBuildTargetGroup(), currentDefinedSymbols);
+            }
         }
 
         /// <summary>
@@ -85,33 +88,12 @@ namespace QuickEditor
         /// </summary>
         public static void AddScriptingDefineSymbol(string symbol, BuildTargetGroup buildTargetGroup)
         {
-            List<string> list = GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            if(list.Contains(symbol)) { return; }
-            list.Add(symbol);
-            SetScriptingDefineSymbolsForGroup(buildTargetGroup, list);
-        }
-
-        /// <summary>
-        /// Adds a symbols array to the target buildTargetGroup.
-        /// </summary>
-        public static void AddScriptingDefineSymbols(string[] symbols)
-        {
-            AddScriptingDefineSymbols(symbols, GetActiveBuildTargetGroup());
-        }
-
-        /// <summary>
-        /// Adds a symbols array to the target buildTargetGroup.
-        /// </summary>
-        public static void AddScriptingDefineSymbols(string[] symbols, BuildTargetGroup buildTargetGroup)
-        {
-            if(symbols == null || symbols.Length == 0) { return; }
-            List<string> list = GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            for(int i = 0; i < symbols.Length; i++)
+            string currentDefinedSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
+            if (currentDefinedSymbols.Contains(symbol) == false)
             {
-                if(list.Contains(symbols[i])) { continue; }
-                list.Add(symbols[i]);
+                currentDefinedSymbols += ";" + symbol;
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, currentDefinedSymbols);
             }
-            SetScriptingDefineSymbolsForGroup(buildTargetGroup, list);
         }
 
         /// <summary>
@@ -119,40 +101,12 @@ namespace QuickEditor
         /// </summary>
         public static void RemoveScriptingDefineSymbol(string symbol)
         {
-            RemoveScriptingDefineSymbol(symbol, GetActiveBuildTargetGroup());
-        }
-
-        /// <summary>
-        /// Removes a symbol to the target build target group.
-        /// </summary>
-        public static void RemoveScriptingDefineSymbol(string symbol, BuildTargetGroup buildTargetGroup)
-        {
-            List<string> list = GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            if(!list.Contains(symbol)) { return; }
-            list.Remove(symbol);
-            SetScriptingDefineSymbolsForGroup(buildTargetGroup, list);
-        }
-
-        /// <summary>
-        /// Removes a symbols array to the currently active build target group.
-        /// </summary>
-        public static void RemoveScriptingDefineSymbols(string[] symbols)
-        {
-            RemoveScriptingDefineSymbols(symbols, EditorUserBuildSettings.selectedBuildTargetGroup);
-        }
-
-        /// <summary>
-        /// Removes a symbols array to the target build target group.
-        /// </summary>
-        public static void RemoveScriptingDefineSymbols(string[] symbols, BuildTargetGroup buildTargetGroup)
-        {
-            if(symbols == null || symbols.Length == 0) { return; }
-            List<string> list = GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-            for(int i = 0; i < symbols.Length; i++)
+            string currentDefinedSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
+            if (currentDefinedSymbols.Contains(symbol) == true)
             {
-                if(list.Contains(symbols[i])) { list.Remove(symbols[i]); }
+                currentDefinedSymbols = currentDefinedSymbols.Replace(symbol, "");
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, currentDefinedSymbols);
             }
-            SetScriptingDefineSymbolsForGroup(buildTargetGroup, list);
         }
 
         /// <summary>
@@ -178,82 +132,40 @@ namespace QuickEditor
         /// </summary>
         public static BuildTargetGroup GetActiveBuildTargetGroup()
         {
-            switch(EditorUserBuildSettings.activeBuildTarget)
+            switch (EditorUserBuildSettings.activeBuildTarget)
             {
-#if UNITY_2017_1_OR_NEWER
-                case BuildTarget.StandaloneOSX: return BuildTargetGroup.Standalone;  //Build a macOS standalone(Intel 64 - bit).
-#endif
-                case BuildTarget.StandaloneWindows: return BuildTargetGroup.Standalone; //Build a Windows standalone.
-                case BuildTarget.iOS: return BuildTargetGroup.iOS; //Build an iOS player.
-                case BuildTarget.Android: return BuildTargetGroup.Android; //Build an Android .apk standalone app.
-                case BuildTarget.StandaloneLinux: return BuildTargetGroup.Standalone; //Build a Linux standalone.
-                case BuildTarget.StandaloneWindows64: return BuildTargetGroup.Standalone; //Build a Windows 64 - bit standalone.
-                case BuildTarget.WebGL: return BuildTargetGroup.WebGL; //WebGL.
-                case BuildTarget.WSAPlayer: return BuildTargetGroup.WSA; //Build an Windows Store Apps player.
-                case BuildTarget.StandaloneLinux64: return BuildTargetGroup.Standalone; //Build a Linux 64 - bit standalone.
-                case BuildTarget.StandaloneLinuxUniversal: return BuildTargetGroup.Standalone; //Build a Linux universal standalone.
-                case BuildTarget.Tizen: return BuildTargetGroup.Tizen; //Build a Tizen player.
-                case BuildTarget.PSP2: return BuildTargetGroup.PSP2; //Build a PS Vita Standalone.
-                case BuildTarget.PS4: return BuildTargetGroup.PS4; //Build a PS4 Standalone.
-                case BuildTarget.XboxOne: return BuildTargetGroup.XboxOne; //Build a Xbox One Standalone.
-                case BuildTarget.N3DS: return BuildTargetGroup.N3DS; //Build to Nintendo 3DS platform.
-                case BuildTarget.WiiU: return BuildTargetGroup.WiiU; //Build a Wii U standalone.
-                case BuildTarget.tvOS: return BuildTargetGroup.tvOS; //Build to Apple's tvOS platform.
-                case BuildTarget.Switch: return BuildTargetGroup.Switch; //Build a Nintendo Switch player.
-
-#if UNITY_5_6 || UNITY_5_6_3
-                case BuildTarget.StandaloneOSXUniversal: return BuildTargetGroup.Standalone;
+                case BuildTarget.StandaloneOSX: return BuildTargetGroup.Standalone;
                 case BuildTarget.StandaloneOSXIntel: return BuildTargetGroup.Standalone;
+                case BuildTarget.StandaloneWindows: return BuildTargetGroup.Standalone;
+                //case BuildTarget.WebPlayer: return BuildTargetGroup.WebPlayer;
+                //case BuildTarget.WebPlayerStreamed: return BuildTargetGroup.WebPlayer;
+                case BuildTarget.iOS: return BuildTargetGroup.iOS;
+                //case BuildTarget.PS3: return BuildTargetGroup.PS3;
+                //case BuildTarget.XBOX360: return BuildTargetGroup.XBOX360;
+                case BuildTarget.Android: return BuildTargetGroup.Android;
+                case BuildTarget.StandaloneLinux: return BuildTargetGroup.Standalone;
+                case BuildTarget.StandaloneWindows64: return BuildTargetGroup.Standalone;
+                case BuildTarget.WebGL: return BuildTargetGroup.WebGL;
+                case BuildTarget.WSAPlayer: return BuildTargetGroup.WSA;
+                case BuildTarget.StandaloneLinux64: return BuildTargetGroup.Standalone;
+                case BuildTarget.StandaloneLinuxUniversal: return BuildTargetGroup.Standalone;
+                //case BuildTarget.WP8Player: return BuildTargetGroup.WP8;
                 case BuildTarget.StandaloneOSXIntel64: return BuildTargetGroup.Standalone;
+                //case BuildTarget.BlackBerry: return BuildTargetGroup.BlackBerry;
+                case BuildTarget.Tizen: return BuildTargetGroup.Tizen;
+                case BuildTarget.PSP2: return BuildTargetGroup.PSP2;
+                case BuildTarget.PS4: return BuildTargetGroup.PS4;
+                case BuildTarget.PSM: return BuildTargetGroup.PSM;
+                case BuildTarget.XboxOne: return BuildTargetGroup.XboxOne;
                 case BuildTarget.SamsungTV: return BuildTargetGroup.SamsungTV;
-#endif
-
-                case BuildTarget.NoTarget: return BuildTargetGroup.Unknown;
+                //case BuildTarget.Nintendo3DS: return BuildTargetGroup.Nintendo3DS;
+                case BuildTarget.WiiU: return BuildTargetGroup.WiiU;
+                case BuildTarget.tvOS: return BuildTargetGroup.tvOS;
+                //case BuildTarget.iPhone: return BuildTargetGroup.iPhone;
+                //case BuildTarget.BB10: return BuildTargetGroup.BlackBerry;
+                //case BuildTarget.MetroPlayer: return BuildTargetGroup.Metro;
                 default: return BuildTargetGroup.Unknown;
             }
-        }
-
-        public static List<string> GetScriptingDefineSymbolsForGroup(BuildTargetGroup buildTargetGroup)
-        {
-            List<string> symbols = new List<string>();
-            try
-            {
-                string defineSymbols = PlayerSettings.GetScriptingDefineSymbolsForGroup(buildTargetGroup);
-                string[] array = defineSymbols.Split(';');
-                if(array != null && array.Length > 0) symbols.AddRange(array);
-            }
-            catch(System.Exception)
-            {
-            }
-            return symbols;
-        }
-
-        public static void SetScriptingDefineSymbolsForGroup(BuildTargetGroup buildTargetGroup, List<string> symbols)
-        {
-            symbols = CleanList(symbols);
-            string symbolsString = string.Empty;
-            if(symbols != null && symbols.Count > 0)
-            {
-                for(int i = 0; i < symbols.Count; i++)
-                {
-                    if(!string.IsNullOrEmpty(symbols[i]))
-                        symbolsString += symbols[i] + ";";
-                }
-            }
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(buildTargetGroup, symbolsString);
-        }
-
-        /// <summary>
-        /// Cleans the given list by removing any whitespaces, any duplicates and any empty entries
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static List<string> CleanList(List<string> list)
-        {
-            for(int i = 0; i < list.Count; i++) list[i] = Regex.Replace(list[i], @"\s+", ""); //remove whitespaces
-            list = list.Distinct().ToList(); //remove duplicates
-            list.RemoveAll(s => string.IsNullOrEmpty(s.Trim())); //remove empty entries
-            return list;
         }
 
         /// <summary>

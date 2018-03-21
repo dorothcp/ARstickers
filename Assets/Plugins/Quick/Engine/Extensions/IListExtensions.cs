@@ -34,7 +34,6 @@ namespace QuickEngine.Extensions
             return items != null && items.Any();
         }
 
-#if !(UNITY_5_6 && UNITY_WINRT)
         /// <summary>
         /// Shuffle the list.
         /// </summary>
@@ -59,7 +58,5 @@ namespace QuickEngine.Extensions
                 list[n] = value;
             }
         }
-#endif
-
     }
 }

@@ -55,8 +55,8 @@ PlayerSettings:
   iosAppInBackgroundBehavior: 0
   displayResolutionDialog: 1
   iosAllowHTTPDownload: 1
-  allowedAutorotateToPortrait: 1
-  allowedAutorotateToPortraitUpsideDown: 1
+  allowedAutorotateToPortrait: 0
+  allowedAutorotateToPortraitUpsideDown: 0
   allowedAutorotateToLandscapeRight: 1
   allowedAutorotateToLandscapeLeft: 1
   useOSAutorotation: 1
@@ -697,7 +697,7 @@ PlayerSettings:
   scriptingDefineSymbols:
     1: 
     4: VUFORIA_IOS_SETTINGS
-    7: VUFORIA_ANDROID_SETTINGS
+    7: VUFORIA_ANDROID_SETTINGS;dUI_DoozyUI
     14: VUFORIA_WSA_SETTINGS
   platformArchitecture: {}
   scriptingBackend: {}

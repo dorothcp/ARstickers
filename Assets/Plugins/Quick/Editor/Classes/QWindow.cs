@@ -1,4 +1,5 @@
-// Copyright (c) 2016 - 2018 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2017 Doozy Entertainment / Marlink Trading SRL and Ez Entertainment / Ez Entertainment SRL. All Rights Reserved.
+// This code is a collaboration between Doozy Entertainment and Ez Entertainment and is not to be used in any other assets other then the ones created by their respective companies.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
@@ -11,23 +12,6 @@ namespace QuickEditor
 {
     public class QWindow : EditorWindow
     {
-        /*
-https://docs.unity3d.com/ScriptReference/MenuItem.html
-MenuItem
-class in UnityEditorOther Versions Leave feedback
-Description
-The MenuItem attribute allows you to add menu items to the main menu and inspector context menus.
-
-The MenuItem attribute turns any static function into a menu command. Only static functions can use the MenuItem attribute.
-
-To create a hotkey you can use the following special characters: % (ctrl on Windows, cmd on macOS), # (shift), & (alt). If no special modifier key combinations are required the key can be given after an underscore. For example to create a menu with hotkey shift-alt-g use "MyMenu/Do Something #&g". To create a menu with hotkey g and no key modifiers pressed use "MyMenu/Do Something _g".
-
-Some special keyboard keys are supported as hotkeys, for example "#LEFT" would map to shift-left. The keys supported like this are: LEFT, RIGHT, UP, DOWN, F1 .. F12, HOME, END, PGUP, PGDN.
-
-A hotkey text must be preceded with a space character ("MyMenu/Do_g" won't be interpreted as hotkey, while "MyMenu/Do _g" will).
-
-         */
-
         #region Colors
         private Color tempColor = Color.white;
         private Color tempContentColor = Color.white;
@@ -76,19 +60,6 @@ A hotkey text must be preceded with a space character ("MyMenu/Do_g" won't be in
         /// This is the EditorGUIUtility.singleLineHeight value
         /// </summary> 
         public const float SPACE_16 = 16;
-        #endregion
-
-        #region QLabel
-        private QLabel _qLabel;
-        public QLabel QLabel { get { if(_qLabel == null) { _qLabel = new QLabel(); } return _qLabel; } }
-
-        public Dictionary<string, QLabel> qLabels;
-        public QLabel GetQLabel(string text, Style.Text style = Style.Text.Normal)
-        {
-            if(qLabels == null) { qLabels = new Dictionary<string, QLabel>(); }
-            if(!qLabels.ContainsKey(text)) { qLabels.Add(text, new QLabel(text, style)); }
-            return qLabels[text];
-        }
         #endregion
 
         public Dictionary<string, InfoMessage> infoMessage;

@@ -1,20 +1,18 @@
-// Copyright (c) 2016 - 2018 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2017 Doozy Entertainment / Marlink Trading SRL and Ez Entertainment / Ez Entertainment SRL. All Rights Reserved.
+// This code is a collaboration between Doozy Entertainment and Ez Entertainment and is not to be used in any other assets other then the ones created by their respective companies.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
-#if !(UNITY_5_6 && UNITY_WINRT)
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-#endif
 
 namespace QuickEngine.Utils
 {
     public static class QReflection
     {
-#if !(UNITY_5_6 && UNITY_WINRT)
         public static List<string> AssemblyNames { get; private set; }
         public static Dictionary<string, Type> TypeCache { get; private set; }
         public static Dictionary<Assembly, List<string>> NameSpaceCache { get; private set; }
@@ -186,6 +184,5 @@ namespace QuickEngine.Utils
             fieldToSet.SetValue(instance, value);
             return true;
         }
-#endif
     }
 }

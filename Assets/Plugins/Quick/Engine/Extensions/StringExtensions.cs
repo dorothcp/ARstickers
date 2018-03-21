@@ -13,25 +13,10 @@ namespace QuickEngine.Extensions
     public static class StringExtensions
     {
         /// <summary>
-        /// Removes the whitespaces characters. No Regex!
-        /// </summary>
-        public static string RemoveWhitespaces(this string str)
-        {
-            return str.Replace(" ", "");
-        }
-
-        /// <summary>
-        /// Removes all types of whitespace characters (space, tabs, line breaks...). Uses Regex!
-        /// </summary>
-        public static string RemoveAllTypesOfWhitespaces(this string str)
-        {
-            return Regex.Replace(str, @"\s", "");
-        }
-
-
-        /// <summary>
         /// Returns true if the entire string is numeric, false otherwise.
         /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns></returns>
         public static bool IsNumeric(this string str)
         {
             return (!string.IsNullOrEmpty(str)) && (new Regex(@"^-?[0-9]*\.?[0-9]+$").IsMatch(str.Trim()));
@@ -39,6 +24,8 @@ namespace QuickEngine.Extensions
         /// <summary>
         /// Returns true if the string contains a numeric sequence, false otherwise.
         /// </summary>
+        /// <param name="str">The string.</param>
+        /// <returns></returns>
         public static bool ContainsNumeric(this string str)
         {
             return (!string.IsNullOrEmpty(str)) && (new Regex(@"[0-9]+").IsMatch(str));
@@ -46,12 +33,12 @@ namespace QuickEngine.Extensions
         /// <summary>
         /// Extension for string.IsNullOrEmpty(). Returns true if the string is null or empty, false otherwise.
         /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
         public static bool IsNullOrEmpty(this string str)
         {
             return string.IsNullOrEmpty(str);
         }
-
-#if !(UNITY_5_6 && UNITY_WINRT)
         /// <summary>
         /// Converts the specified string to title case (except for words that are entirely in uppercase, which are considered to be acronyms).
         /// </summary>
@@ -68,8 +55,6 @@ namespace QuickEngine.Extensions
             // convert to title case
             return textInfo.ToTitleCase(str);
         }
-#endif
-
         /// <summary>
         ///  A simple extension method based on Binary Worrier's code which will handle acronyms properly, and is repeatable (won't mangle already spaced words). 
         /// </summary>

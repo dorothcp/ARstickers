@@ -1,9 +1,8 @@
-// Copyright (c) 2016 - 2018 Doozy Entertainment / Marlink Trading SRL. All Rights Reserved.
+// Copyright (c) 2017 Doozy Entertainment / Marlink Trading SRL and Ez Entertainment / Ez Entertainment SRL. All Rights Reserved.
+// This code is a collaboration between Doozy Entertainment and Ez Entertainment and is not to be used in any other assets other then the ones created by their respective companies.
 // This code can only be used under the standard Unity Asset Store End User License Agreement
 // A Copy of the EULA APPENDIX 1 is available at http://unity3d.com/company/legal/as_terms
 
-using QuickEngine.Extensions;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.AnimatedValues;
 using UnityEditor.SceneManagement;
@@ -12,19 +11,28 @@ using UnityEngine.SceneManagement;
 
 namespace QuickEditor
 {
-    public enum IconPosition { Left, Right }
-
     #region InfoMessage
     /// <summary>
     /// Enum used by the DrawInfoMessage in order to show an icon and set the proper style for each InfoMessage type.
     /// </summary>
     public enum InfoMessageType
     {
+        /// <summary>
+        /// Uses the TextStyle.Help style.
+        /// </summary>
         Help,
+        /// <summary>
+        /// Uses the TextStyle.Info style.
+        /// </summary>
         Info,
+        /// <summary>
+        /// Uses the TextStyle.Warning style.
+        /// </summary>
         Warning,
-        Error,
-        Success
+        /// <summary>
+        /// Uses the TextStyle.Error style.
+        /// </summary>
+        Error
     }
     /// <summary>
     /// Stores an AnimBool (used for show/hide animation), a title (optional), and a message.
@@ -50,151 +58,16 @@ namespace QuickEditor
     }
     #endregion
 
-    public class QLabel
-    {
-        private string _text;
-        private Style.Text _style;
-        private Vector2 _size;
-        private GUIContent _content;
-
-        public string text { get { return _text; } set { UpdateText(value); } }
-        public Style.Text style { get { return _style; } set { UpdateStyle(value); } }
-        public Vector2 size { get { return _size; } }
-        public float x { get { return _size.x; } }
-        public float y { get { return _size.y; } }
-        public GUIContent content { get { return _content; } }
-
-        public QLabel(string text, Style.Text style = Style.Text.Normal)
-        {
-            _content = new GUIContent(text);
-            _size = QStyles.CalcSize(_content, style);
-            _text = text;
-        }
-
-        public QLabel()
-        {
-            _text = string.Empty;
-            _style = Style.Text.Normal;
-            _content = new GUIContent(_text);
-            _size = QStyles.CalcSize(_content, _style);
-        }
-
-        private void UpdateText(string text)
-        {
-            _text = text;
-            _content.text = text;
-            _size = QStyles.CalcSize(_content, _style);
-        }
-
-        private void UpdateStyle(Style.Text style)
-        {
-            _style = style;
-            _size = QStyles.CalcSize(_content, style);
-        }
-    }
-
-    [System.Serializable]
-    public class LinkButtonData
-    {
-        public string text;
-        public string url;
-        public Style.LinkButton linkButton;
-    }
-
     public static class QUI
     {
-        public static Color AccentColorBlue { get { return QUI.IsProSkin ? QColors.Blue.Color : QColors.BlueLight.Color; } }
-        public static Color AccentColorGreen { get { return QUI.IsProSkin ? QColors.Green.Color : QColors.GreenLight.Color; } }
-        public static Color AccentColorOrange { get { return QUI.IsProSkin ? QColors.Orange.Color : QColors.OrangeLight.Color; } }
-        public static Color AccentColorRed { get { return QUI.IsProSkin ? QColors.Red.Color : QColors.RedLight.Color; } }
-        public static Color AccentColorPurple { get { return QUI.IsProSkin ? QColors.Purple.Color : QColors.PurpleLight.Color; } }
-        public static Color AccentColorGray { get { return QUI.IsProSkin ? QColors.UnityLight.Color : QColors.UnityLight.Color; } }
-
-        #region QLabel
-        private static QLabel _qLabel;
-        public static QLabel QLabel { get { if(_qLabel == null) { _qLabel = new QLabel(); } return _qLabel; } }
-
-        public static Dictionary<string, QLabel> qLabels;
-        public static QLabel GetQLabel(string text, Style.Text style = Style.Text.Normal)
-        {
-            if(qLabels == null) { qLabels = new Dictionary<string, QLabel>(); }
-            if(!qLabels.ContainsKey(text)) { qLabels.Add(text, new QLabel(text, style)); }
-            return qLabels[text];
-        }
-        #endregion
-
-        private static bool result;
-        private static string tempString;
-        private static float tempFloat;
-
-        public static bool IsProSkin { get { return EditorGUIUtility.isProSkin; } }
-
-        public static float SingleLineHeight { get { return EditorGUIUtility.singleLineHeight; } }
-
-        public static void SetNextControlName(string name) { GUI.SetNextControlName(name); }
-        public static string GetNameOfFocusedControl() { return GUI.GetNameOfFocusedControl(); }
-
-        public static void FocusControl(string name) { GUI.FocusControl(name); }
-        public static void FocusTextInControl(string name) { EditorGUI.FocusTextInControl(name); }
-
-        #region DetectKey
-
-        public static bool DetectKey(Event @event, KeyCode keyCode, EventType eventType)
-        {
-            result = false;
-            result = @event.isKey
-                     && @event.keyCode == keyCode
-                     && @event.type == eventType;
-            if(result) { @event.Use(); }
-            return result;
-        }
-
-        public static bool DetectKey(Event @event, KeyCode keyCode, EventType eventType, string focusedControlName) { return GUI.GetNameOfFocusedControl().Equals(focusedControlName) && DetectKey(@event, keyCode, eventType); }
-
-        public static bool DetectKeyDown(Event @event, KeyCode keyCode) { return DetectKey(@event, keyCode, EventType.KeyDown); }
-        public static bool DetectKeyDown(Event @event, KeyCode keyCode, string focusedControlName) { return GUI.GetNameOfFocusedControl().Equals(focusedControlName) && DetectKeyDown(@event, keyCode); }
-
-        public static bool DetectKeyUp(Event @event, KeyCode keyCode) { return DetectKey(@event, keyCode, EventType.KeyUp); }
-        public static bool DetectKeyUp(Event @event, KeyCode keyCode, string focusedControlName) { return GUI.GetNameOfFocusedControl().Equals(focusedControlName) && DetectKeyUp(@event, keyCode); }
-
-        public static bool DetectKeyDownCombo(Event @event, EventModifiers modifier, KeyCode key) { return @event.modifiers == modifier && DetectKeyDown(@event, key); }
-        public static bool DetectKeyUpCombo(Event @event, EventModifiers modifier, KeyCode key) { return @event.modifiers == modifier && DetectKeyUp(@event, key); }
-
-        #endregion
-
-        #region EditorDialog
-        /// <summary>
-        /// Displays a modal dialog.
-        /// </summary>
-        /// <param name="title"> The title of the message box.</param>
-        /// <param name="message">The text of the message.</param>
-        /// <param name="ok">Label displayed on the OK dialog button.</param>
-        public static bool DisplayDialog(string title, string message, string ok)
-        {
-            return EditorUtility.DisplayDialog(title, message, ok);
-        }
-
-        /// <summary>
-        /// Displays a modal dialog.
-        /// </summary>
-        /// <param name="title"> The title of the message box.</param>
-        /// <param name="message">The text of the message.</param>
-        /// <param name="ok">Label displayed on the OK dialog button.</param>
-        /// <param name="cancel">Label displayed on the Cancel dialog button.</param>
-        public static bool DisplayDialog(string title, string message, string ok, string cancel)
-        {
-            return EditorUtility.DisplayDialog(title, message, ok, cancel);
-        }
-        #endregion
-
         #region MarkSceneDirty
         /// <summary>
         /// Marks the current active scene as dirty, prompting a save. To mark all the currently opened scenes as dirty, just pass markAllScenesDirty as true.
         /// </summary>
         public static void MarkSceneDirty(bool markAllScenesDirty = false)
         {
-            if(EditorApplication.isPlaying) { return; }
-            if(markAllScenesDirty) { EditorSceneManager.MarkAllScenesDirty(); }
+            if (EditorApplication.isPlaying) { return; }
+            if (markAllScenesDirty) { EditorSceneManager.MarkAllScenesDirty(); }
             else { EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene()); }
         }
         #endregion
@@ -273,7 +146,7 @@ namespace QuickEditor
         /// <returns>Returns false if it's a scene object.</returns>
         public static bool IsPersistent(Object target)
         {
-            if(target == null) { return false; }
+            if (target == null) { return false; }
             return EditorUtility.IsPersistent(target);
         }
         #endregion
@@ -330,7 +203,7 @@ namespace QuickEditor
         /// </summary>
         /// <param name="colorDark">Dark skin color</param>
         /// <param name="colorLight">Light skin color</param>
-        public static void SetGUIColor(Color colorDark, Color colorLight) { GUI.color = IsProSkin ? colorDark : colorLight; }
+        public static void SetGUIColor(Color colorDark, Color colorLight) { GUI.color = EditorGUIUtility.isProSkin ? colorDark : colorLight; }
         /// <summary>
         /// Returns the current value of GUI.color
         /// </summary>
@@ -346,7 +219,7 @@ namespace QuickEditor
         /// </summary>
         /// <param name="colorDark">Dark skin color</param>
         /// <param name="colorLight">Light skin color</param>
-        public static void SetGUIContentColor(Color colorDark, Color colorLight) { GUI.contentColor = IsProSkin ? colorDark : colorLight; }
+        public static void SetGUIContentColor(Color colorDark, Color colorLight) { GUI.contentColor = EditorGUIUtility.isProSkin ? colorDark : colorLight; }
         /// <summary>
         /// Returns the current value of GUI.contentColor
         /// </summary>
@@ -362,11 +235,24 @@ namespace QuickEditor
         /// </summary>
         /// <param name="colorDark">Dark skin color</param>
         /// <param name="colorLight">Light skin color</param>
-        public static void SetGUIBackgroundColor(Color colorDark, Color colorLight) { GUI.backgroundColor = IsProSkin ? colorDark : colorLight; }
+        public static void SetGUIBackgroundColor(Color colorDark, Color colorLight) { GUI.backgroundColor = EditorGUIUtility.isProSkin ? colorDark : colorLight; }
         /// <summary>
         /// Returns the current value of GUI.backgroundColor
         /// </summary>
         public static Color GetGUIBackgroundColor { get { return GUI.backgroundColor; } }
+        #endregion
+
+        #region VerticalSpace / HorizontalSpace
+        /// <summary>
+        /// Adds a vertical space
+        /// </summary>
+        /// <param name="pixels">Space height in pixels</param>
+        public static void VerticalSpace(float pixels) { EditorGUILayout.BeginVertical(); { GUILayout.Space(pixels); } EditorGUILayout.EndVertical(); }
+        /// <summary>
+        /// Adds a horizontal space
+        /// </summary>
+        /// <param name="pixels">Space width in pixels</param>
+        public static void HorizontalSpace(float pixels) { EditorGUILayout.BeginHorizontal(); { GUILayout.Space(pixels); } EditorGUILayout.EndHorizontal(); }
         #endregion
 
         #region Space / FlexibleSpace
@@ -380,14 +266,7 @@ namespace QuickEditor
         /// </summary>
         public static void Space(float pixels)
         {
-            try
-            {
-                GUILayout.Space(pixels);
-            }
-            catch
-            {
-                ExitGUI();
-            }
+            GUILayout.Space(pixels);
         }
 
         /// <summary>
@@ -398,15 +277,7 @@ namespace QuickEditor
         /// </summary>
         public static void FlexibleSpace()
         {
-            //try catch addded to fix OSX issues
-            try
-            {
-                GUILayout.FlexibleSpace();
-            }
-            catch
-            {
-                ExitGUI();
-            }
+            GUILayout.FlexibleSpace();
         }
         #endregion
 
@@ -428,7 +299,7 @@ namespace QuickEditor
         /// <param name="texture">Target texture.</param>
         public static void DrawTexture(Texture texture)
         {
-            if(texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
+            if (texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
             Rect rect = GUILayoutUtility.GetRect(0f, 0f);
             rect.width = texture.width;
             rect.height = texture.height;
@@ -443,8 +314,8 @@ namespace QuickEditor
         /// <param name="textureLight">Target texture for light skin.</param>
         public static void DrawTexture(Texture textureDark, Texture textureLight)
         {
-            Texture texture = IsProSkin ? textureDark : textureLight;
-            if(texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
+            Texture texture = EditorGUIUtility.isProSkin ? textureDark : textureLight;
+            if (texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
             Rect rect = GUILayoutUtility.GetRect(0f, 0f);
             rect.width = texture.width;
             rect.height = texture.height;
@@ -460,23 +331,11 @@ namespace QuickEditor
         /// <param name="height">Set texture height.</param>
         public static void DrawTexture(Texture texture, float width, float height)
         {
-            if(texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
+            if (texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
             Rect rect = GUILayoutUtility.GetRect(0f, 0f);
             rect.width = width;
             rect.height = height;
             GUILayout.Space(rect.height);
-            GUI.DrawTexture(rect, texture);
-        }
-
-        /// <summary>
-        /// Draws a Texture at the specified rect position and size.
-        /// <para>This is used mainly for reorderable lists.</para>
-        /// </summary>
-        /// <param name="rect">Rect's x and y are used for positioning and the width and height are used for sizing the texture.</param>
-        /// <param name="texture">Target texture.</param>
-        public static void DrawTexture(Rect rect, Texture texture)
-        {
-            if(texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
             GUI.DrawTexture(rect, texture);
         }
 
@@ -489,45 +348,13 @@ namespace QuickEditor
         /// <param name="height">Set texture height.</param>
         public static void DrawTexture(Texture textureDark, Texture textureLight, float width, float height)
         {
-            Texture texture = IsProSkin ? textureDark : textureLight;
-            if(texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
+            Texture texture = EditorGUIUtility.isProSkin ? textureDark : textureLight;
+            if (texture == null) { Debug.Log("[QUI] Texture is null!"); return; }
             Rect rect = GUILayoutUtility.GetRect(0f, 0f);
             rect.width = width;
             rect.height = height;
             GUILayout.Space(rect.height);
             GUI.DrawTexture(rect, texture);
-        }
-        #endregion
-
-        #region DrawLine
-        public static void DrawLine(QColors.Color color, float width)
-        {
-            switch(color)
-            {
-                case QColors.Color.Gray: DrawTexture(QResources.lineGray.texture, width, 1); break;
-                case QColors.Color.Green: DrawTexture(QResources.lineGreen.texture, width, 1); break;
-                case QColors.Color.Blue: DrawTexture(QResources.lineBlue.texture, width, 1); break;
-                case QColors.Color.Orange: DrawTexture(QResources.lineOrange.texture, width, 1); break;
-                case QColors.Color.Red: DrawTexture(QResources.lineRed.texture, width, 1); break;
-                case QColors.Color.Purple: DrawTexture(QResources.linePurple.texture, width, 1); break;
-                default: DrawTexture(QResources.lineGray.texture, width, 1); break;
-            }
-            QUI.Space(1);
-        }
-
-        public static void DrawLine(Rect rect, QColors.Color color)
-        {
-            Rect r = new Rect(rect.x, rect.y, rect.width, 1);
-            switch(color)
-            {
-                case QColors.Color.Gray: DrawTexture(r, QResources.lineGray.texture); break;
-                case QColors.Color.Green: DrawTexture(r, QResources.lineGreen.texture); break;
-                case QColors.Color.Blue: DrawTexture(r, QResources.lineBlue.texture); break;
-                case QColors.Color.Orange: DrawTexture(r, QResources.lineOrange.texture); break;
-                case QColors.Color.Red: DrawTexture(r, QResources.lineRed.texture); break;
-                case QColors.Color.Purple: DrawTexture(r, QResources.linePurple.texture); break;
-                default: DrawTexture(r, QResources.lineGray.texture); break;
-            }
         }
         #endregion
 
@@ -931,14 +758,14 @@ namespace QuickEditor
         /// </summary>
         /// <param name="text">Text to display on the button.</param>
         /// <returns>Returns true when the users clicks the button.</returns>
-        public static bool Button(string text) { if(GUILayout.Button(text)) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text) { if (GUILayout.Button(text)) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         ///  Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
         /// <param name="text">Text to display on the button.</param>
         /// <param name="width">Set the button's width.</param>
         /// <returns></returns>
-        public static bool Button(string text, float width) { if(GUILayout.Button(text, GUILayout.Width(width))) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text, float width) { if (GUILayout.Button(text, GUILayout.Width(width))) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         ///  Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
@@ -946,14 +773,14 @@ namespace QuickEditor
         /// <param name="width">Set the button's width.</param>
         /// <param name="height">Set the button's height.</param>
         /// <returns></returns>
-        public static bool Button(string text, float width, float height) { if(GUILayout.Button(text, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text, float width, float height) { if (GUILayout.Button(text, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         /// Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
         /// <param name="text">Text to display on the button.</param>
         /// <param name="style">The style to use.</param>
         /// <returns>Returns true when the users clicks the button.</returns>
-        public static bool Button(string text, GUIStyle style) { if(GUILayout.Button(text, style)) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text, GUIStyle style) { if (GUILayout.Button(text, style)) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         ///  Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
@@ -961,7 +788,7 @@ namespace QuickEditor
         /// <param name="style">The style to use.</param>
         /// <param name="width">Set the button's width.</param>
         /// <returns></returns>
-        public static bool Button(string text, GUIStyle style, float width) { if(GUILayout.Button(text, style, GUILayout.Width(width))) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text, GUIStyle style, float width) { if (GUILayout.Button(text, style, GUILayout.Width(width))) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         ///  Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
@@ -970,13 +797,13 @@ namespace QuickEditor
         /// <param name="width">Set the button's width.</param>
         /// <param name="height">Set the button's height.</param>
         /// <returns></returns>
-        public static bool Button(string text, GUIStyle style, float width, float height) { if(GUILayout.Button(text, style, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(string text, GUIStyle style, float width, float height) { if (GUILayout.Button(text, style, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         /// Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
         /// <param name="style">The style to use.</param>
         /// <returns>Returns true when the users clicks the button.</returns>
-        public static bool Button(GUIStyle style) { if(GUILayout.Button(GUIContent.none, style)) { ResetKeyboardFocus(); return true; } return false; }
+        public static bool Button(GUIStyle style) { if (GUILayout.Button(GUIContent.none, style)) { ResetKeyboardFocus(); return true; } return false; }
         /// <summary>
         /// Make a single press button. The user clicks them and something happens immediately.
         /// </summary>
@@ -984,459 +811,44 @@ namespace QuickEditor
         /// <param name="width">Set the button's width.</param>
         /// <param name="height">Set the button's height.</param>
         /// <returns>Returns true when the users clicks the button.</returns>
-        public static bool Button(GUIStyle style, float width, float height) { if(GUILayout.Button(GUIContent.none, style, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
-
-        public static bool Button(Rect rect, GUIStyle style)
-        {
-            return GUI.Button(rect, GUIContent.none, style);
-        }
-        public static bool Button(Rect rect, string text, GUIStyle style)
-        {
-            return GUI.Button(rect, new GUIContent(text), style);
-        }
-
+        public static bool Button(GUIStyle style, float width, float height) { if (GUILayout.Button(GUIContent.none, style, GUILayout.Width(width), GUILayout.Height(height))) { ResetKeyboardFocus(); return true; } return false; }
         #endregion
 
-        #region Quick Buttons
-        public static bool ButtonMinus() { return Button(QStyles.GetStyle(Style.QuickButton.Minus), 16, 16); }
-        public static bool ButtonMinus(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Minus)); }
-
-        public static bool ButtonPlus() { return Button(QStyles.GetStyle(Style.QuickButton.Plus), 16, 16); }
-        public static bool ButtonPlus(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Plus)); }
-
-        public static bool ButtonCancel() { return Button(QStyles.GetStyle(Style.QuickButton.Cancel), 16, 16); }
-        public static bool ButtonCancel(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Cancel)); }
-
-        public static bool ButtonOk() { return Button(QStyles.GetStyle(Style.QuickButton.Ok), 16, 16); }
-        public static bool ButtonOk(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Ok)); }
-
-        public static bool ButtonLock(bool isSelected = false) { return Button(QStyles.GetStyle(isSelected ? Style.QuickButton.LockSelected : Style.QuickButton.Lock), 16, 16); }
-        public static bool ButtonLock(Rect rect, bool isSelected = false) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(isSelected ? Style.QuickButton.LockSelected : Style.QuickButton.Lock)); }
-
-        public static bool ButtonSave(bool isSelected = false) { return Button(QStyles.GetStyle(isSelected ? Style.QuickButton.SaveSelected : Style.QuickButton.Save), 16, 16); }
-        public static bool ButtonSave(Rect rect, bool isSelected = false) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(isSelected ? Style.QuickButton.SaveSelected : Style.QuickButton.Save)); }
-
-        public static bool ButtonReset() { return Button(QStyles.GetStyle(Style.QuickButton.Reset), 16, 16); }
-        public static bool ButtonReset(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Reset)); }
-
-        public static bool ButtonGraph(bool isSelected = false) { return Button(QStyles.GetStyle(isSelected ? Style.QuickButton.GraphSelected : Style.QuickButton.Graph), 16, 16); }
-        public static bool ButtonGraph(Rect rect, bool isSelected = false) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(isSelected ? Style.QuickButton.GraphSelected : Style.QuickButton.Graph)); }
-
-        public static bool ButtonData() { return Button(QStyles.GetStyle(Style.QuickButton.Data), 16, 16); }
-        public static bool ButtonData(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Data)); }
-
-        public static bool ButtonPlay() { return Button(QStyles.GetStyle(Style.QuickButton.Play), 16, 16); }
-        public static bool ButtonPlay(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Play)); }
-
-        public static bool ButtonStop() { return Button(QStyles.GetStyle(Style.QuickButton.Stop), 16, 16); }
-        public static bool ButtonStop(Rect rect) { return Button(new Rect(rect.x, rect.y, 16, 16), QStyles.GetStyle(Style.QuickButton.Stop)); }
-        #endregion
-
-        #region Link Buttons
-        public static bool LinkButton(string text, string url, Style.LinkButton linkButton, bool expandWidth = false)
-        {
-            if(expandWidth)
-            {
-                if(GUILayout.Button(text, QStyles.GetStyle(linkButton), GUILayout.Height(20)))
-                {
-                    Application.OpenURL(url);
-                    ResetKeyboardFocus();
-                    return true;
-                }
-            }
-            else
-            {
-                QLabel.text = text;
-                QLabel.style = Style.Text.Button;
-                if(GUILayout.Button(text, QStyles.GetStyle(linkButton), GUILayout.Width(70 + QLabel.x + 6 - (linkButton == Style.LinkButton.Link ? 40 : 0)), GUILayout.Height(20)))
-                {
-                    Application.OpenURL(url);
-                    ResetKeyboardFocus();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool LinkButton(LinkButtonData data, bool expandWidth = false)
-        {
-            return LinkButton(data.text, data.url, data.linkButton, expandWidth);
-        }
-
-        public static void DrawLinkButtonsList(List<LinkButtonData> list)
-        {
-            if(list == null || list.Count == 0)
-            {
-                return;
-            }
-
-            for(int i = 0; i < list.Count; i++)
-            {
-                QUI.BeginHorizontal();
-                {
-                    QUI.Space(16);
-                    QUI.LinkButton(list[i].text, list[i].url, list[i].linkButton);
-                    QUI.FlexibleSpace();
-                }
-                QUI.EndHorizontal();
-
-                if(i != list.Count - 1)
-                {
-                    QUI.Space(8);
-                }
-            }
-        }
-
-        public static void DrawLinkButtonsList(List<LinkButtonData> list, float indent, float width)
-        {
-            if(list == null || list.Count == 0)
-            {
-                return;
-            }
-
-            for(int i = 0; i < list.Count; i++)
-            {
-                QUI.BeginHorizontal(width);
-                {
-                    QUI.Space(indent);
-                    QUI.LinkButton(list[i].text, list[i].url, list[i].linkButton);
-                    QUI.FlexibleSpace();
-                }
-                QUI.EndHorizontal();
-
-                if(i != list.Count - 1)
-                {
-                    QUI.Space(8);
-                }
-            }
-        }
-
-        #endregion
-
-        #region Sliced Buttons
-        public static bool SlicedButton(string text, QColors.Color color, bool isSelected = false)
-        {
-            if(GUILayout.Button(text, GetSlicedButtonStyle(color, isSelected), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-            {
-                ResetKeyboardFocus();
-                return true;
-            }
-            return false;
-        }
-        public static bool SlicedButton(string text, QColors.Color color, float width, bool isSelected = false)
-        {
-            if(GUILayout.Button(text, GetSlicedButtonStyle(color, isSelected), GUILayout.Width(width), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-            {
-                ResetKeyboardFocus();
-                return true;
-            }
-            return false;
-        }
-        public static bool SlicedButton(string text, QColors.Color color, float width, float height, bool isSelected = false)
-        {
-            GetSlicedButtonStyle(color, isSelected).fontSize = Mathf.RoundToInt(height * 0.55f);
-            result = Button(text, GetSlicedButtonStyle(color, isSelected), width, height);
-            GetSlicedButtonStyle(color, isSelected).fontSize = QStyles.GetTextFontSize(Style.Text.Button);
-            return result;
-        }
-        public static bool SlicedButton(string text, QColors.Color color, Rect rect, bool isSelected = false) { return Button(rect, text, GetSlicedButtonStyle(color, isSelected)); }
-
-        public static bool SlicedButton(Rect rect, string text, QColors.Color color, bool isSelected = false)
-        {
-            GetSlicedButtonStyle(color, isSelected).fontSize = Mathf.RoundToInt(rect.height * 0.6f);
-            result = Button(rect, text, GetSlicedButtonStyle(color, isSelected));
-            GetSlicedButtonStyle(color, isSelected).fontSize = QStyles.GetTextFontSize(Style.Text.Button);
-            return result;
-        }
-
-        public static GUIStyle GetSlicedButtonStyle(QColors.Color color, bool isSelected = false)
-        {
-            switch(color)
-            {
-                case QColors.Color.Gray: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Gray : Style.SlicedButton.GraySelected);
-                case QColors.Color.Green: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Green : Style.SlicedButton.GreenSelected);
-                case QColors.Color.Blue: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Blue : Style.SlicedButton.BlueSelected);
-                case QColors.Color.Orange: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Orange : Style.SlicedButton.OrangeSelected);
-                case QColors.Color.Red: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Red : Style.SlicedButton.RedSelected);
-                case QColors.Color.Purple: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Purple : Style.SlicedButton.PurpleSelected);
-                default: return QStyles.GetStyle(!isSelected ? Style.SlicedButton.Gray : Style.SlicedButton.GraySelected);
-            }
-        }
-        #endregion
-
-        #region Ghost Buttons
-        public static bool GhostButton(string text, QColors.Color color, bool isSelected = false)
-        {
-            if(GUILayout.Button(text, GetGhostButtonStyle(color, isSelected), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-            {
-                ResetKeyboardFocus();
-                return true;
-            }
-            return false;
-        }
-        public static bool GhostButton(string text, QColors.Color color, float width, bool isSelected = false)
-        {
-            if(GUILayout.Button(text, GetGhostButtonStyle(color, isSelected), GUILayout.Width(width), GUILayout.Height(EditorGUIUtility.singleLineHeight)))
-            {
-                ResetKeyboardFocus();
-                return true;
-            }
-            return false;
-        }
-        public static bool GhostButton(string text, QColors.Color color, float width, float height, bool isSelected = false)
-        {
-            GetGhostButtonStyle(color, isSelected).fontSize = Mathf.RoundToInt(height * 0.55f);
-            result = Button(text, GetGhostButtonStyle(color, isSelected), width, height);
-            GetGhostButtonStyle(color, isSelected).fontSize = QStyles.GetTextFontSize(Style.Text.Button);
-            return result;
-        }
-        public static bool GhostButton(string text, QColors.Color color, float width, float height, int fontSize, bool isSelected = false)
-        {
-            GetGhostButtonStyle(color, isSelected).fontSize = fontSize;
-            result = Button(text, GetGhostButtonStyle(color, isSelected), width, height);
-            GetGhostButtonStyle(color, isSelected).fontSize = QStyles.GetTextFontSize(Style.Text.Button);
-            return result;
-        }
-        public static bool GhostButton(string text, QColors.Color color, Rect rect, bool isSelected = false) { return Button(rect, text, GetGhostButtonStyle(color, isSelected)); }
-
-        public static bool GhostButton(Rect rect, string text, QColors.Color color, bool isSelected = false)
-        {
-            GetGhostButtonStyle(color, isSelected).fontSize = Mathf.RoundToInt(rect.height * 0.6f);
-            result = Button(rect, text, GetGhostButtonStyle(color, isSelected));
-            GetGhostButtonStyle(color, isSelected).fontSize = QStyles.GetTextFontSize(Style.Text.Button);
-            return result;
-        }
-
-        public static GUIStyle GetGhostButtonStyle(QColors.Color color, bool isSelected = false)
-        {
-            switch(color)
-            {
-                case QColors.Color.Gray: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Gray : Style.GhostButton.GraySelected);
-                case QColors.Color.Green: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Green : Style.GhostButton.GreenSelected);
-                case QColors.Color.Blue: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Blue : Style.GhostButton.BlueSelected);
-                case QColors.Color.Orange: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Orange : Style.GhostButton.OrangeSelected);
-                case QColors.Color.Red: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Red : Style.GhostButton.RedSelected);
-                case QColors.Color.Purple: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Purple : Style.GhostButton.PurpleSelected);
-                default: return QStyles.GetStyle(!isSelected ? Style.GhostButton.Gray : Style.GhostButton.GraySelected);
-            }
-        }
-        #endregion
-
-        #region Icon Bar
+        #region ButtonPlus / ButtonMinus
         /// <summary>
-        /// Draws a bar with the set color and icon (miniIcon) texture.
+        /// Make a single '+' green button that is 18x18 pixels. The user clicks them and something happens immediately.
         /// </summary>
-        public static void DrawIconBar(string text, QTexture qTexture, QColors.Color color, IconPosition iconPosition, float width, float height = 16, Style.Text textStyle = Style.Text.Small)
+        /// <returns>Returns true when the users clicks the button.</returns>
+        public static bool ButtonPlus()
         {
-            QUI.BeginVertical(width);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, color), width, height);
-                QUI.Space(-height);
-
-                if(qTexture != null && qTexture.texture != null)
-                {
-                    QUI.BeginVertical(width, height);
-                    {
-                        QUI.Space(2);
-                        QUI.BeginHorizontal(width, height - 2);
-                        {
-                            QUI.Space(4);
-                            if(iconPosition == IconPosition.Right) { QUI.FlexibleSpace(); }
-                            QUI.DrawTexture(qTexture.texture, height - 4, height - 4);
-                            if(iconPosition == IconPosition.Left) { QUI.FlexibleSpace(); }
-                            QUI.Space(4);
-                        }
-                        QUI.EndHorizontal();
-                    }
-                    QUI.EndVertical();
-                    QUI.Space(-height);
-                }
-
-                switch(color)
-                {
-                    case QColors.Color.Gray: QUI.SetGUIColor(AccentColorGray); break;
-                    case QColors.Color.Blue: QUI.SetGUIColor(AccentColorBlue); break;
-                    case QColors.Color.Green: QUI.SetGUIColor(AccentColorGreen); break;
-                    case QColors.Color.Orange: QUI.SetGUIColor(AccentColorOrange); break;
-                    case QColors.Color.Red: QUI.SetGUIColor(AccentColorRed); break;
-                    case QColors.Color.Purple: QUI.SetGUIColor(AccentColorPurple); break;
-                }
-
-                QUI.Space(2);
-
-                QLabel.text = text;
-                QLabel.style = textStyle;
-                QUI.BeginHorizontal(width, height);
-                {
-                    QUI.Space(4);
-                    if(iconPosition == IconPosition.Left) { QUI.Space(height - 2); }
-                    QUI.BeginVertical(QLabel.x, height);
-                    {
-                        QUI.Space(-2);
-                        QUI.Space((height - QUI.SingleLineHeight) / 2);
-                        QUI.Label(QLabel);
-                        QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    }
-                    QUI.EndVertical();
-                }
-                QUI.EndHorizontal();
-
-                QUI.ResetColors();
-            }
-            QUI.EndVertical();
-        }
-        #endregion
-
-        #region Ghost Titles
-        public static void GhostTitle(string text, QColors.Color color) { EditorGUILayout.LabelField(text, GetGhostTitleStyle(color), GUILayout.Height(36)); }
-        public static void GhostTitle(string text, QColors.Color color, float width) { EditorGUILayout.LabelField(text, GetGhostTitleStyle(color), GUILayout.Width(width), GUILayout.Height(36)); }
-        public static void GhostTitle(string text, QColors.Color color, float width, float height) { EditorGUILayout.LabelField(text, GetGhostTitleStyle(color), GUILayout.Width(width), GUILayout.Height(height)); }
-
-        public static GUIStyle GetGhostTitleStyle(QColors.Color color)
-        {
-            switch(color)
-            {
-                case QColors.Color.Gray: return QStyles.GetStyle(Style.GhostTitle.Gray);
-                case QColors.Color.Green: return QStyles.GetStyle(Style.GhostTitle.Green);
-                case QColors.Color.Blue: return QStyles.GetStyle(Style.GhostTitle.Blue);
-                case QColors.Color.Orange: return QStyles.GetStyle(Style.GhostTitle.Orange);
-                case QColors.Color.Red: return QStyles.GetStyle(Style.GhostTitle.Red);
-                case QColors.Color.Purple: return QStyles.GetStyle(Style.GhostTitle.Purple);
-                default: return QStyles.GetStyle(Style.GhostTitle.Gray);
-            }
-        }
-        #endregion
-
-        #region Bars
-        public static bool SlicedBar(string text, QColors.Color color, AnimBool aBool, float width, float height = 16)
-        {
-            result = false;
-            if(height > 16)
-            {
-                GetSlicedBarStyle(color, aBool.value).fontSize = Mathf.RoundToInt(height * 0.6f);
-            }
-            QUI.BeginVertical(width, height);
-            {
-                if(QUI.Button(text, GetSlicedBarStyle(color, aBool.value), width, height))
-                {
-                    result = true;
-                }
-                QUI.Space(-height);
-                QUI.FlexibleSpace();
-                DrawCaret(aBool);
-                QUI.FlexibleSpace();
-            }
-            QUI.EndVertical();
-            if(height > 16)
-            {
-                GetSlicedBarStyle(color, aBool.value).fontSize = QStyles.GetTextFontSize(Style.Text.Bar);
-            }
-            return result;
-        }
-        public static bool GhostBar(string text, QColors.Color color, AnimBool aBool, float width, float height = 16)
-        {
-            result = false;
-            if(height > 16)
-            {
-                GetGhostBarStyle(color, aBool.value).fontSize = Mathf.RoundToInt(height * 0.6f);
-            }
-            QUI.BeginVertical(width, height);
-            {
-                if(QUI.Button(text, GetGhostBarStyle(color, aBool.value), width, height))
-                {
-                    result = true;
-                }
-                QUI.Space(-height);
-                QUI.FlexibleSpace();
-                DrawCaret(aBool);
-                QUI.FlexibleSpace();
-            }
-            QUI.EndVertical();
-            if(height > 16)
-            {
-                GetGhostBarStyle(color, aBool.value).fontSize = QStyles.GetTextFontSize(Style.Text.Bar);
-            }
-            return result;
-        }
-        public static bool GhostBar(Rect rect, string text, QColors.Color color, AnimBool aBool)
-        {
-            result = false;
-            if(rect.height > 16)
-            {
-                GetGhostBarStyle(color, aBool.value).fontSize = Mathf.RoundToInt(rect.height * 0.6f);
-            }
-            if(QUI.Button(rect, text, GetGhostBarStyle(color, aBool.value)))
-            {
-                result = true;
-            }
-            DrawCaret(new Rect(rect.x + 4, rect.y + (rect.height - 16) / 2, 16, 16), aBool);
-            if(rect.height > 16)
-            {
-                GetGhostBarStyle(color, aBool.value).fontSize = QStyles.GetTextFontSize(Style.Text.Bar);
-            }
-            return result;
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.font = QuickEngine.QResources.FontAwesome;
+            buttonStyle.fontSize = 8;
+            return Button("\uf067", buttonStyle, 18, 18);
         }
 
-        public static void DrawCaret(AnimBool aBool)
+        /// <summary>
+        /// Make a single '-' red button that is 18x18 pixels. The user clicks them and something happens immediately.
+        /// </summary>
+        /// <returns>Returns true when the users clicks the button.</returns>
+        public static bool ButtonMinus()
         {
-            QUI.BeginHorizontal(16, 16);
-            {
-                QUI.Space(4);
-                if(aBool.faded == 0) { DrawTexture(QResources.caretGray10.texture, 16, 16); }
-                else if(aBool.faded <= 0.1f) { DrawTexture(QResources.caretGray9.texture, 16, 16); }
-                else if(aBool.faded <= 0.2f) { DrawTexture(QResources.caretGray8.texture, 16, 16); }
-                else if(aBool.faded <= 0.3f) { DrawTexture(QResources.caretGray7.texture, 16, 16); }
-                else if(aBool.faded <= 0.4f) { DrawTexture(QResources.caretGray6.texture, 16, 16); }
-                else if(aBool.faded <= 0.5f) { DrawTexture(QResources.caretGray5.texture, 16, 16); }
-                else if(aBool.faded <= 0.6f) { DrawTexture(QResources.caretGray4.texture, 16, 16); }
-                else if(aBool.faded <= 0.7f) { DrawTexture(QResources.caretGray3.texture, 16, 16); }
-                else if(aBool.faded <= 0.8f) { DrawTexture(QResources.caretGray2.texture, 16, 16); }
-                else if(aBool.faded <= 0.9f) { DrawTexture(QResources.caretGray1.texture, 16, 16); }
-                else { DrawTexture(QResources.caretGray0.texture, 16, 16); }
-                QUI.FlexibleSpace();
-            }
-            QUI.EndHorizontal();
-        }
-        public static void DrawCaret(Rect rect, AnimBool aBool)
-        {
-            if(aBool.faded == 0) { DrawTexture(rect, QResources.caretGray10.texture); }
-            else if(aBool.faded <= 0.1f) { DrawTexture(rect, QResources.caretGray9.texture); }
-            else if(aBool.faded <= 0.2f) { DrawTexture(rect, QResources.caretGray8.texture); }
-            else if(aBool.faded <= 0.3f) { DrawTexture(rect, QResources.caretGray7.texture); }
-            else if(aBool.faded <= 0.4f) { DrawTexture(rect, QResources.caretGray6.texture); }
-            else if(aBool.faded <= 0.5f) { DrawTexture(rect, QResources.caretGray5.texture); }
-            else if(aBool.faded <= 0.6f) { DrawTexture(rect, QResources.caretGray4.texture); }
-            else if(aBool.faded <= 0.7f) { DrawTexture(rect, QResources.caretGray3.texture); }
-            else if(aBool.faded <= 0.8f) { DrawTexture(rect, QResources.caretGray2.texture); }
-            else if(aBool.faded <= 0.9f) { DrawTexture(rect, QResources.caretGray1.texture); }
-            else { DrawTexture(rect, QResources.caretGray0.texture); }
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.font = QuickEngine.QResources.FontAwesome;
+            buttonStyle.fontSize = 8;
+            return Button("\uf068", buttonStyle, 18, 18);
         }
 
-        public static GUIStyle GetSlicedBarStyle(QColors.Color color, bool isSelected = false)
+        /// <summary>
+        /// Make a single 'reset symbol' dark grey button that is 22x18 pixels. The user clicks them and something happens immediately.
+        /// </summary>
+        /// <returns>Returns true when the users clicks the button.</returns>
+        public static bool ButtonReset()
         {
-            switch(color)
-            {
-                case QColors.Color.Gray: return QStyles.GetStyle(isSelected ? Style.SlicedBar.GraySelected : Style.SlicedBar.Gray);
-                case QColors.Color.Green: return QStyles.GetStyle(isSelected ? Style.SlicedBar.GreenSelected : Style.SlicedBar.Green);
-                case QColors.Color.Blue: return QStyles.GetStyle(isSelected ? Style.SlicedBar.BlueSelected : Style.SlicedBar.Blue);
-                case QColors.Color.Orange: return QStyles.GetStyle(isSelected ? Style.SlicedBar.OrangeSelected : Style.SlicedBar.Orange);
-                case QColors.Color.Red: return QStyles.GetStyle(isSelected ? Style.SlicedBar.RedSelected : Style.SlicedBar.Red);
-                case QColors.Color.Purple: return QStyles.GetStyle(isSelected ? Style.SlicedBar.PurpleSelected : Style.SlicedBar.Purple);
-                default: return QStyles.GetStyle(isSelected ? Style.SlicedBar.GraySelected : Style.SlicedBar.Gray);
-            }
-        }
-        public static GUIStyle GetGhostBarStyle(QColors.Color color, bool isSelected = false)
-        {
-            switch(color)
-            {
-                case QColors.Color.Gray: return QStyles.GetStyle(isSelected ? Style.GhostBar.GraySelected : Style.GhostBar.Gray);
-                case QColors.Color.Green: return QStyles.GetStyle(isSelected ? Style.GhostBar.GreenSelected : Style.GhostBar.Green);
-                case QColors.Color.Blue: return QStyles.GetStyle(isSelected ? Style.GhostBar.BlueSelected : Style.GhostBar.Blue);
-                case QColors.Color.Orange: return QStyles.GetStyle(isSelected ? Style.GhostBar.OrangeSelected : Style.GhostBar.Orange);
-                case QColors.Color.Red: return QStyles.GetStyle(isSelected ? Style.GhostBar.RedSelected : Style.GhostBar.Red);
-                case QColors.Color.Purple: return QStyles.GetStyle(isSelected ? Style.GhostBar.PurpleSelected : Style.GhostBar.Purple);
-                default: return QStyles.GetStyle(isSelected ? Style.GhostBar.GraySelected : Style.GhostBar.Gray);
-            }
+            GUIStyle buttonStyle = new GUIStyle(GUI.skin.button);
+            buttonStyle.font = QuickEngine.QResources.FontAwesome;
+            buttonStyle.fontSize = 8;
+            return Button("\uf021", buttonStyle, 22, 18);
         }
         #endregion
 
@@ -1547,7 +959,7 @@ namespace QuickEditor
         /// <returns>Returns the new value of the button.</returns>
         public static bool Toggle(bool value, string text)
         {
-            return GUILayout.Toggle(value, text, QStyles.GetStyle(QStyles.GetStyleName(Style.Default.Toggle)), GUILayout.Width(12)); ;
+            return GUILayout.Toggle(value, text);
         }
         /// <summary>
         /// Make an on/off toggle button. This is a shhorthand method for the native GUILayout.Toggle method.
@@ -1556,7 +968,7 @@ namespace QuickEditor
         /// <returns>Returns the new value of the button.</returns>
         public static bool Toggle(bool value)
         {
-            return GUILayout.Toggle(value, GUIContent.none, QStyles.GetStyle(QStyles.GetStyleName(Style.Default.Toggle)), GUILayout.Width(12)); ;
+            return GUILayout.Toggle(value, GUIContent.none, GUILayout.Width(12));
         }
 
         /// <summary>
@@ -1656,7 +1068,7 @@ namespace QuickEditor
         /// <param name="text">The text label to use.</param>
         public static void Toggle(SerializedProperty serializedProperty, string text)
         {
-            serializedProperty.boolValue = GUILayout.Toggle(serializedProperty.boolValue, text, QStyles.GetStyle(QStyles.GetStyleName(Style.Default.Toggle)));
+            serializedProperty.boolValue = GUILayout.Toggle(serializedProperty.boolValue, text);
         }
         /// <summary>
         /// Make an on/off toggle button. This is a shhorthand method for the native GUILayout.Toggle method.
@@ -1664,157 +1076,7 @@ namespace QuickEditor
         /// <param name="serializedProperty">The SerializedProperty to make a toggle for.</param>
         public static void Toggle(SerializedProperty serializedProperty)
         {
-            serializedProperty.boolValue = GUILayout.Toggle(serializedProperty.boolValue, GUIContent.none, QStyles.GetStyle(QStyles.GetStyleName(Style.Default.Toggle)), GUILayout.Width(12));
-        }
-        #endregion
-
-        #region QToggle
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when OFF.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="serializedProperty">Serialized propery that handles this toggle.</param>
-        /// <param name="height">Toggle height.</param>
-        /// <param name="textStyle">Text style.</param>
-        public static void QToggle(string text, SerializedProperty serializedProperty, float height, Style.Text textStyle)
-        {
-            QLabel.text = text;
-            QLabel.style = textStyle;
-
-            QUI.BeginHorizontal(QLabel.x + 30, height);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, serializedProperty.boolValue ? QColors.Color.Blue : QColors.Color.Gray), QLabel.x + 30, height);
-                QUI.Space(-QLabel.x - 24);
-
-                QUI.BeginVertical(12, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Toggle(serializedProperty);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.Space(2);
-
-                QUI.BeginVertical(QLabel.x, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Label(QLabel);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.FlexibleSpace();
-            }
-            QUI.EndHorizontal();
-        }
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when OFF.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="boolValue">target bool that handles this toggle.</param>
-        /// <param name="height">Toggle height.</param>
-        /// <param name="textStyle">Text style.</param>
-        public static bool QToggle(string text, bool boolValue, float height, Style.Text textStyle)
-        {
-            result = false;
-
-            QLabel.text = text;
-            QLabel.style = textStyle;
-
-            QUI.BeginHorizontal(QLabel.x + 30, height);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, boolValue ? QColors.Color.Blue : QColors.Color.Gray), QLabel.x + 30, height);
-                QUI.Space(-QLabel.x - 24);
-
-                QUI.BeginVertical(12, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    result = QUI.Toggle(boolValue);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.Space(2);
-
-                QUI.BeginVertical(QLabel.x, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Label(QLabel);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.FlexibleSpace();
-            }
-            QUI.EndHorizontal();
-
-            return result;
-        }
-
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="serializedProperty">Serialized propery that handles this toggle.</param>
-        /// <param name="height">Toggle height.</param>
-        public static void QToggle(string text, SerializedProperty serializedProperty, float height)
-        {
-            QToggle(text, serializedProperty, height, Style.Text.Normal);
-        }
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="boolValue">target bool that handles this toggle.</param>
-        /// <param name="height">Toggle height.</param>
-        public static bool QToggle(string text, bool boolValue, float height)
-        {
-            return QToggle(text, boolValue, height, Style.Text.Normal);
-        }
-
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="serializedProperty">Serialized propery that handles this toggle.</param>
-        /// <param name="textStyle">Text style.</param>
-        public static void QToggle(string text, SerializedProperty serializedProperty, Style.Text textStyle)
-        {
-            QToggle(text, serializedProperty, 18, textStyle);
-        }
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="boolValue">target bool that handles this toggle.</param>
-        /// <param name="textStyle">Text style.</param>
-        public static bool QToggle(string text, bool boolValue, Style.Text textStyle)
-        {
-            return QToggle(text, boolValue, 18, textStyle);
-        }
-
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="serializedProperty">Serialized propery that handles this toggle.</param>
-        public static void QToggle(string text, SerializedProperty serializedProperty)
-        {
-            QToggle(text, serializedProperty, 18, Style.Text.Normal);
-        }
-        /// <summary>
-        /// Draws a Toggle with a background that is blue when ON and gray when off.
-        /// </summary>
-        /// <param name="text">Describes what this toggle does.</param>
-        /// <param name="boolValue">target bool that handles this toggle.</param>
-        public static bool QToggle(string text, bool boolValue)
-        {
-            return QToggle(text, boolValue, 18, Style.Text.Normal);
+            serializedProperty.boolValue = GUILayout.Toggle(serializedProperty.boolValue, GUIContent.none, GUILayout.Width(12));
         }
         #endregion
 
@@ -2080,141 +1342,6 @@ namespace QuickEditor
         {
             EditorGUILayout.LabelField(new GUIContent { image = texture, tooltip = tooltip }, GUILayout.Width(width), GUILayout.Height(height));
         }
-
-        /// <summary>
-        /// Make a label field. (Useful for showing read-only info.)
-        /// </summary>
-        /// <param name="label">Label in front of the label field.</param>
-        /// <param name="style">Set a predefined custom style for the label.</param>
-        public static void Label(string label, Style.Text style = Style.Text.Normal)
-        {
-            Label(label, QStyles.GetStyle(QStyles.GetStyleName(style)));
-        }
-
-        /// <summary>
-        /// Make a label field. (Useful for showing read-only info.)
-        /// </summary>
-        /// <param name="label">Label in front of the label field.</param>
-        /// <param name="style">Set a predefined custom style for the label.</param>
-        /// <param name="width">The label's width.</param>
-        public static void Label(string label, Style.Text style, float width)
-        {
-            Label(label, QStyles.GetStyle(QStyles.GetStyleName(style)), width);
-        }
-
-        /// <summary>
-        /// Make a label field. (Useful for showing read-only info.)
-        /// </summary>
-        /// <param name="label">Label in front of the label field.</param>
-        /// <param name="style">Set a predefined custom style for the label.</param>
-        /// <param name="width">The label's width.</param>
-        /// <param name="height">The label's height.</param>
-        public static void Label(string label, Style.Text style, float width, float height)
-        {
-            Label(label, QStyles.GetStyle(QStyles.GetStyleName(style)), width, height);
-        }
-
-        public static void Label(QLabel qLabel)
-        {
-            Label(qLabel.text, qLabel.style, qLabel.x);
-        }
-
-        public static void Label(QLabel qLabel, float height)
-        {
-            Label(qLabel.text, qLabel.style, qLabel.x, height);
-        }
-
-        /// <summary>
-        /// Make a label field. (Useful for showing read-only info.)
-        /// </summary>
-        /// <param name="rect">Label position and size rect.</param>
-        /// <param name="label">Label in front of the label field.</param>
-        /// <param name="style">Set a predefined custom style for the label.</param>
-        public static void Label(Rect rect, string label, Style.Text style = Style.Text.Normal)
-        {
-            EditorGUI.LabelField(rect, label, QStyles.GetStyle(QStyles.GetStyleName(style)));
-        }
-
-        public static void LabelWithBackground(string text, Style.Text textStyle = Style.Text.Small, float height = 20, float extraWidth = 0, QColors.Color color = QColors.Color.Gray)
-        {
-            QLabel.text = text;
-            QLabel.style = textStyle;
-            QUI.BeginHorizontal(QLabel.x + 16 + extraWidth, height);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, color), QLabel.x + 16, height);
-                QUI.Space(-QLabel.x - 12 - extraWidth);
-
-                QUI.BeginVertical(QLabel.x, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Label(QLabel);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-            }
-            QUI.EndHorizontal();
-        }
-
-        public static void LabelWithBackground(QLabel qLabel, float height = 20, float extraWidth = 0, QColors.Color color = QColors.Color.Gray)
-        {
-            QUI.BeginHorizontal(qLabel.x + 16 + extraWidth, height);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, color), qLabel.x + 16, height);
-                QUI.Space(-qLabel.x - 12 - extraWidth);
-
-                QUI.BeginVertical(qLabel.x, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Label(qLabel);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-            }
-            QUI.EndHorizontal();
-        }
-        #endregion
-
-        #region TextField
-        public static string TextField(string text)
-        {
-            return EditorGUILayout.TextField(text);
-        }
-
-        public static string TextField(string text, Color backgroundColor)
-        {
-            QUI.SetGUIBackgroundColor(backgroundColor);
-            tempString = EditorGUILayout.TextField(text);
-            QUI.ResetColors();
-            return tempString;
-        }
-
-        public static string TextField(string text, float width)
-        {
-            return EditorGUILayout.TextField(text, GUILayout.Width(width));
-        }
-
-        public static string TextField(string text, Color backgroundColor, float width)
-        {
-            QUI.SetGUIBackgroundColor(backgroundColor);
-            tempString = EditorGUILayout.TextField(text, GUILayout.Width(width));
-            QUI.ResetColors();
-            return tempString;
-        }
-
-        public static string TextField(string text, float width, float height)
-        {
-            return EditorGUILayout.TextField(text, GUILayout.Width(width), GUILayout.Height(height));
-        }
-
-        public static string TextField(string text, Color backgroundColor, float width, float height)
-        {
-            QUI.SetGUIBackgroundColor(backgroundColor);
-            tempString = EditorGUILayout.TextField(text, GUILayout.Width(width), GUILayout.Height(height));
-            QUI.ResetColors();
-            return tempString;
-        }
         #endregion
 
         #region PropertyField
@@ -2296,40 +1423,6 @@ namespace QuickEditor
         public static void PropertyField(SerializedProperty serializedProperty, bool includeChildren, GUIContent content, float width)
         {
             EditorGUILayout.PropertyField(serializedProperty, content, includeChildren, GUILayout.Width(width));
-        }
-        #endregion
-
-        #region QObjectPropertyField
-        public static void QObjectPropertyField(string text, SerializedProperty serializedProperty, float width, float height = 20, bool checkForNull = true)
-        {
-            QLabel.text = text;
-            QLabel.style = Style.Text.Normal;
-
-            QUI.BeginHorizontal(width, height);
-            {
-                QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, checkForNull && serializedProperty.objectReferenceValue != null ? QColors.Color.Blue : QColors.Color.Gray), width, height);
-                QUI.Space(-width + 4);
-
-                QUI.BeginVertical(QLabel.x, height);
-                {
-                    QUI.Space(-1);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.Label(QLabel);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.BeginVertical(width - QLabel.x - 12, height);
-                {
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                    QUI.PropertyField(serializedProperty);
-                    QUI.Space((height - QUI.SingleLineHeight) / 2);
-                }
-                QUI.EndVertical();
-
-                QUI.FlexibleSpace();
-            }
-            QUI.EndHorizontal();
         }
         #endregion
 
@@ -2448,162 +1541,6 @@ namespace QuickEditor
         }
         #endregion
 
-        #region Box
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        public static void BoxExpandedWidth(GUIContent content, float height) { GUILayout.Box(content, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        public static void BoxExpandedWidth(string label, float height) { GUILayout.Box(label, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        public static void BoxExpandedWidth(Texture texture, float height) { GUILayout.Box(texture, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedWidth(GUIContent content, GUIStyle style, float height) { GUILayout.Box(content, style, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedWidth(string label, GUIStyle style, float height) { GUILayout.Box(label, style, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box with its width expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedWidth(Texture texture, GUIStyle style, float height) { GUILayout.Box(texture, style, GUILayout.ExpandWidth(true), GUILayout.Height(height)); }
-
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        public static void BoxExpandedHeight(GUIContent content, float width) { GUILayout.Box(content, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        public static void BoxExpandedHeight(string label, float width) { GUILayout.Box(label, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        public static void BoxExpandedHeight(Texture texture, float width) { GUILayout.Box(texture, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedHeight(GUIContent content, GUIStyle style, float width) { GUILayout.Box(content, style, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedHeight(string label, GUIStyle style, float width) { GUILayout.Box(label, style, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its height expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpandedHeight(Texture texture, GUIStyle style, float width) { GUILayout.Box(texture, style, GUILayout.Width(width), GUILayout.ExpandHeight(true)); }
-
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        public static void BoxExpanded(GUIContent content) { GUILayout.Box(content, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        public static void BoxExpanded(string label) { GUILayout.Box(label, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        public static void BoxExpanded(Texture texture) { GUILayout.Box(texture, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpanded(GUIContent content, GUIStyle style) { GUILayout.Box(content, style, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpanded(string label, GUIStyle style) { GUILayout.Box(label, style, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-        /// <summary>
-        /// Make an auto-layout box with its width and height expanded.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void BoxExpanded(Texture texture, GUIStyle style) { GUILayout.Box(texture, style, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true)); }
-
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        public static void Box(GUIContent content, float width, float height) { GUILayout.Box(content, GUILayout.Width(width), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        public static void Box(string label, float width, float height) { GUILayout.Box(label, GUILayout.Width(width), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        public static void Box(Texture texture, float width, float height) { GUILayout.Box(texture, GUILayout.Width(width), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="content">Text, image and tooltip for this box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void Box(GUIContent content, GUIStyle style, float width, float height) { GUILayout.Box(content, style, GUILayout.Width(width), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="label">Text to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void Box(string label, GUIStyle style, float width, float height) { GUILayout.Box(label, style, GUILayout.Width(width), GUILayout.Height(height)); }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        /// <param name="texture">Texture to display on the box.</param>
-        /// <param name="style">The style to use. If left out, the box style from the current GUISkin is used.</param>
-        public static void Box(Texture texture, GUIStyle style, float width, float height)
-        {
-
-            GUILayout.Box(texture, style, GUILayout.Width(width), GUILayout.Height(height));
-        }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        public static void Box(GUIStyle style, float width, float height)
-        {
-            GUILayout.Box(GUIContent.none, style, GUILayout.Width(width), GUILayout.Height(height));
-        }
-        /// <summary>
-        /// Make an auto-layout box.
-        /// </summary>
-        public static void Box(Rect rect, GUIStyle style)
-        {
-            GUI.Box(rect, GUIContent.none, style);
-        }
-        #endregion
-
         #region InfoMessage / DrawInfoMessage
         /// <summary>
         /// Draws an InfoMessage box with the specified InfoMessage settings, with the set width and of the set InfoMessageType.
@@ -2611,42 +1548,29 @@ namespace QuickEditor
         /// <param name="im">Contains an AnimBool that manages the show/hide animation, a title (optional), and a message.</param>
         /// <param name="width">The width of this box. The height is determined automatically by the amount of text contained in the InfoMessage.</param>
         /// <param name="type">Depending on the type,it will draw a HelpBox, an InfoBox, a WarningBox or an ErrorBox. Each box has it's own style and icon.</param>
-        public static void DrawInfoMessage(InfoMessage im, float width)
+        public static void DrawInfoMessage(InfoMessage im, float width = -1)
         {
-            if(!im.show.value) { return; }
-            if(QUI.BeginFadeGroup(im.show.faded))
+            string message = (string.IsNullOrEmpty(im.title) ? "" : "<b>" + im.title + "</b> - ") + im.message;
+            switch (im.type)
             {
-                QUI.BeginVertical();
-                {
-                    QUI.Space(2 * im.show.faded);
-                    QUI.Label(im.title.IsNullOrEmpty() ? im.type.ToString() : im.title, QStyles.GetInfoMessageTitleStyle(GetStyleInfoMessage(im.type)), width * im.show.faded, 20);
-                    if(!im.message.IsNullOrEmpty())
-                    {
-                        QUI.Space(-8);
-                        QUI.Label(im.message, QStyles.GetInfoMessageMessageStyle(GetStyleInfoMessage(im.type)), width * im.show.faded);
-                        QUI.Space(10 * im.show.faded);
-                    }
-                    QUI.Space(2 * im.show.faded);
-                }
-                QUI.EndVertical();
+                case InfoMessageType.Help: DrawInfoMessage(im.show, "\uf059 " + message, QStyles.GetStyle("Help"), width); break;
+                case InfoMessageType.Info: DrawInfoMessage(im.show, "\uf05a " + message, QStyles.GetStyle("Info"), width); break;
+                case InfoMessageType.Warning: DrawInfoMessage(im.show, "\uf071 " + message, QStyles.GetStyle("Warning"), width); break;
+                case InfoMessageType.Error: DrawInfoMessage(im.show, "\uf057 " + message, QStyles.GetStyle("Error"), width); break;
             }
-            QUI.EndFadeGroup();
         }
-
         /// <summary>
-        /// Converts InfoMessageType into Style.InfoMessage. This method is used to get the appropriate style for the selected info message.
+        /// This does the acctual drawing of the InfoMessage Box. The DrawInfoMessage method only does the initial setup for this.
         /// </summary>
-        private static Style.InfoMessage GetStyleInfoMessage(InfoMessageType type)
+        private static void DrawInfoMessage(AnimBool show, string message, GUIStyle style, float width = -1)
         {
-            switch(type)
+            if (!show.value) { return; }
+            if (EditorGUILayout.BeginFadeGroup(show.faded))
             {
-                case InfoMessageType.Help: return Style.InfoMessage.Help;
-                case InfoMessageType.Info: return Style.InfoMessage.Info;
-                case InfoMessageType.Warning: return Style.InfoMessage.Warning;
-                case InfoMessageType.Error: return Style.InfoMessage.Error;
-                case InfoMessageType.Success: return Style.InfoMessage.Success;
-                default: return Style.InfoMessage.Info;
+                if (width < 0) { EditorGUILayout.LabelField(message, style); }
+                else { EditorGUILayout.LabelField(message, style, GUILayout.Width(width)); }
             }
+            EditorGUILayout.EndFadeGroup();
         }
         #endregion
 
@@ -2654,32 +1578,17 @@ namespace QuickEditor
 
         public static void DrawList(SerializedProperty list, float width, string emptyMessage = "List is empty...")
         {
-            if(list.arraySize == 0)
+            if (list.arraySize == 0)
             {
                 QUI.BeginHorizontal(width);
                 {
-                    QLabel.text = emptyMessage;
-                    QLabel.style = Style.Text.Help;
-                    QUI.BeginVertical(QLabel.x, QUI.SingleLineHeight);
+                    QUI.Label(emptyMessage, width - 27);
+                    QUI.BeginVertical(18);
                     {
-                        QUI.Label(QLabel);
-                        QUI.Space(2);
+                        QUI.Space(-1);
+                        if (QUI.ButtonPlus()) { list.InsertArrayElementAtIndex(0); }
                     }
                     QUI.EndVertical();
-
-                    QUI.FlexibleSpace();
-
-                    QUI.BeginVertical(16, QUI.SingleLineHeight);
-                    {
-                        if(QUI.ButtonPlus())
-                        {
-                            list.InsertArrayElementAtIndex(0);
-                        }
-                        QUI.Space(1);
-                    }
-                    QUI.EndVertical();
-
-                    QUI.Space(4);
                 }
                 QUI.EndHorizontal();
                 return;
@@ -2687,331 +1596,39 @@ namespace QuickEditor
 
             QUI.BeginVertical(width);
             {
-                QLabel.style = Style.Text.Help;
-                for(int i = 0; i < list.arraySize; i++)
+                for (int i = 0; i < list.arraySize; i++)
                 {
-                    QUI.BeginHorizontal(width, QUI.SingleLineHeight);
+                    QUI.BeginHorizontal(width);
                     {
-                        QLabel.text = i.ToString();
-                        QUI.Label(QLabel);
-
-                        QUI.Space(2);
-
-                        QUI.PropertyField(list.GetArrayElementAtIndex(i), true, width - QLabel.x - 2 - 16 - 12);
-
-                        if(QUI.ButtonMinus())
+                        QUI.Space(-4);
+                        QUI.Label(" " + i.ToString(), 22);
+                        QUI.PropertyField(list.GetArrayElementAtIndex(i), true, width - 18 - 18 - 13);
+                        QUI.BeginVertical(18);
                         {
-                            list.DeleteArrayElementAtIndex(i);
+                            QUI.Space(-1);
+                            if (QUI.ButtonMinus()) { list.DeleteArrayElementAtIndex(i); }
                         }
-
-                        QUI.Space(8);
+                        QUI.EndVertical();
                     }
                     QUI.EndHorizontal();
                 }
 
                 QUI.BeginHorizontal(width);
                 {
-                    QUI.FlexibleSpace();
-
-                    QUI.BeginVertical(16, QUI.SingleLineHeight);
+                    QUI.Space(width - 23);
+                    QUI.BeginVertical(18);
                     {
-                        if(QUI.ButtonPlus())
-                        {
-                            list.InsertArrayElementAtIndex(0);
-                        }
-                        QUI.Space(1);
+                        QUI.Space(-1);
+                        if (QUI.ButtonPlus()) { list.InsertArrayElementAtIndex(list.arraySize); }
                     }
                     QUI.EndVertical();
-
-                    QUI.Space(4);
+                    QUI.Space(2);
                 }
                 QUI.EndHorizontal();
             }
             QUI.EndVertical();
         }
-        public static void DrawCollapsableList(string barTitle, AnimBool show, QColors.Color color, SerializedProperty list, float width, float barHeight, string emptyMessage = "List is empty...")
-        {
-            tempFloat = (20 + 2 + 18 * (list.arraySize + 1) + 2) * show.faded; //background height
-            if(show.faded > 0.1f)
-            {
-                QUI.BeginHorizontal(width);
-                {
-                    QUI.Space(4 * show.faded);
-                    QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, color), width - 4, tempFloat);
-                }
-                QUI.EndHorizontal();
-                QUI.Space(-tempFloat);
-            }
 
-            if(QUI.GhostBar(barTitle, color, show, width, barHeight))
-            {
-                show.target = !show.target;
-            }
-
-            QUI.BeginHorizontal(width);
-            {
-                QUI.Space(8 * show.faded);
-                if(QUI.BeginFadeGroup(show.faded))
-                {
-                    QUI.BeginVertical(width - 8);
-                    {
-
-                        QUI.Space(2);
-                        QUI.DrawList(list, (width - 8) * show.faded, emptyMessage);
-                        QUI.Space(2);
-
-                        QUI.Space(4 * show.faded);
-                    }
-                    QUI.EndVertical();
-
-                }
-                QUI.EndFadeGroup();
-
-            }
-            QUI.EndHorizontal();
-        }
-
-        public static void DrawStringList(List<string> list, Object targetObject, float width, string emptyMessage = "List is empty...")
-        {
-            if(list.Count == 0)
-            {
-                QUI.BeginHorizontal(width);
-                {
-                    QLabel.text = emptyMessage;
-                    QLabel.style = Style.Text.Help;
-                    QUI.BeginVertical(QLabel.x, QUI.SingleLineHeight);
-                    {
-                        QUI.Label(QLabel);
-                        QUI.Space(2);
-                    }
-                    QUI.EndVertical();
-
-                    QUI.FlexibleSpace();
-
-                    QUI.BeginVertical(16, QUI.SingleLineHeight);
-                    {
-                        if(QUI.ButtonPlus())
-                        {
-                            Undo.RecordObject(targetObject, "AddItem");
-                            list.Add("");
-                        }
-                        QUI.Space(1);
-                    }
-                    QUI.EndVertical();
-
-                    QUI.Space(4);
-                }
-                QUI.EndHorizontal();
-                return;
-            }
-
-            QUI.BeginVertical(width);
-            {
-                QLabel.style = Style.Text.Help;
-                for(int i = 0; i < list.Count; i++)
-                {
-                    QUI.BeginHorizontal(width, QUI.SingleLineHeight);
-                    {
-                        QLabel.text = i.ToString();
-                        QUI.Label(QLabel);
-
-                        QUI.Space(2);
-
-                        list[i] = QUI.TextField(list[i], width - QLabel.x - 2 - 16 - 12);
-
-                        //QUI.PropertyField(list.GetArrayElementAtIndex(i), true, width - QLabel.x - 2 - 16 - 12);
-
-                        if(QUI.ButtonMinus())
-                        {
-                            Undo.RecordObject(targetObject, "RemoveItem");
-                            list.RemoveAt(i);
-                            QUI.ExitGUI();
-                        }
-
-                        QUI.Space(8);
-                    }
-                    QUI.EndHorizontal();
-                }
-
-                QUI.BeginHorizontal(width);
-                {
-                    QUI.FlexibleSpace();
-
-                    QUI.BeginVertical(16, QUI.SingleLineHeight);
-                    {
-                        if(QUI.ButtonPlus())
-                        {
-                            Undo.RecordObject(targetObject, "AddItem");
-                            list.Add("");
-                        }
-                        QUI.Space(1);
-                    }
-                    QUI.EndVertical();
-
-                    QUI.Space(4);
-                }
-                QUI.EndHorizontal();
-            }
-            QUI.EndVertical();
-        }
-        public static void DrawCollapsableStringList(string barTitle, AnimBool show, QColors.Color color, List<string> list, Object targetObject, float width, float barHeight, string emptyMessage = "List is empty...")
-        {
-            tempFloat = (20 + 2 + 18 * (list.Count + 1) + 2) * show.faded; //background height
-            if(show.faded > 0.1f)
-            {
-                QUI.BeginHorizontal(width);
-                {
-                    QUI.Space(4 * show.faded);
-                    QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, color), width - 4, tempFloat);
-                }
-                QUI.EndHorizontal();
-                QUI.Space(-tempFloat);
-            }
-
-            if(QUI.GhostBar(barTitle, color, show, width, barHeight))
-            {
-                show.target = !show.target;
-            }
-
-            QUI.BeginHorizontal(width);
-            {
-                QUI.Space(8 * show.faded);
-                if(QUI.BeginFadeGroup(show.faded))
-                {
-                    QUI.BeginVertical(width - 8);
-                    {
-
-                        QUI.Space(2);
-                        QUI.DrawStringList(list, targetObject, (width - 8) * show.faded, emptyMessage);
-                        QUI.Space(2);
-
-                        QUI.Space(4 * show.faded);
-                    }
-                    QUI.EndVertical();
-                }
-                QUI.EndFadeGroup();
-
-            }
-            QUI.EndHorizontal();
-        }
-
-        #endregion
-
-        #region QObjectList
-        public static void QObjectList(string barText, SerializedProperty serializedProperty, string emptyListText, AnimBool show, float width, float barHeight)
-        {
-            tempFloat = (20 + 2 + 18 * (serializedProperty.arraySize + 1) + 2) * show.faded; //background height
-            if(show.faded > 0.2f) //draw the background
-            {
-                QUI.BeginHorizontal(width);
-                {
-                    QUI.Space(4 * show.faded);
-                    QUI.Box(QStyles.GetBackgroundStyle(Style.BackgroundType.Low, serializedProperty.arraySize > 0 ? QColors.Color.Blue : QColors.Color.Gray), width - 4, tempFloat);
-                }
-                QUI.EndHorizontal();
-                QUI.Space(-tempFloat);
-            }
-
-            if(QUI.SlicedBar(barText, serializedProperty.arraySize > 0 ? QColors.Color.Blue : QColors.Color.Gray, show, width, barHeight))
-            {
-                show.target = !show.target;
-            }
-
-            QUI.BeginHorizontal(width);
-            {
-                QUI.Space(8 * show.faded);
-                if(QUI.BeginFadeGroup(show.faded))
-                {
-                    QUI.BeginVertical(width - 8);
-                    {
-
-                        QUI.Space(2);
-
-                        if(serializedProperty.arraySize == 0)
-                        {
-                            QUI.BeginHorizontal(width - 8);
-                            {
-                                QLabel.text = emptyListText + " Click [+] to start...";
-                                QLabel.style = Style.Text.Help;
-                                QUI.BeginVertical(QLabel.x, QUI.SingleLineHeight);
-                                {
-                                    QUI.Label(QLabel);
-                                    QUI.Space(2);
-                                }
-                                QUI.EndVertical();
-
-                                QUI.FlexibleSpace();
-
-                                QUI.BeginVertical(16, QUI.SingleLineHeight);
-                                {
-                                    if(QUI.ButtonPlus())
-                                    {
-                                        serializedProperty.InsertArrayElementAtIndex(serializedProperty.arraySize);
-                                    }
-                                    QUI.Space(1);
-                                }
-                                QUI.EndVertical();
-
-                                QUI.Space(4);
-                            }
-                            QUI.EndHorizontal();
-                        }
-                        else
-                        {
-                            QUI.BeginVertical(width - 8);
-                            {
-                                QLabel.style = Style.Text.Help;
-                                for(int i = 0; i < serializedProperty.arraySize; i++)
-                                {
-                                    QUI.BeginHorizontal(width - 8, QUI.SingleLineHeight);
-                                    {
-                                        QLabel.text = i.ToString();
-                                        QUI.Label(QLabel);
-
-                                        QUI.Space(2);
-
-                                        QUI.PropertyField(serializedProperty.GetArrayElementAtIndex(i), width - QLabel.x - 2 - 16 - 12 - 8);
-
-                                        if(QUI.ButtonMinus())
-                                        {
-                                            serializedProperty.DeleteArrayElementAtIndex(i);
-                                        }
-
-                                        QUI.Space(8);
-                                    }
-                                    QUI.EndHorizontal();
-                                }
-
-                                QUI.BeginHorizontal(width - 8);
-                                {
-                                    QUI.FlexibleSpace();
-
-                                    QUI.BeginVertical(16, QUI.SingleLineHeight);
-                                    {
-                                        if(QUI.ButtonPlus())
-                                        {
-                                            serializedProperty.InsertArrayElementAtIndex(serializedProperty.arraySize);
-                                        }
-                                        QUI.Space(1);
-                                    }
-                                    QUI.EndVertical();
-
-                                    QUI.Space(4);
-                                }
-                                QUI.EndHorizontal();
-                            }
-                            QUI.EndVertical();
-
-                            QUI.Space(16 * show.faded);
-                        }
-                    }
-                    QUI.EndVertical();
-                }
-                QUI.EndFadeGroup();
-
-            }
-            QUI.EndHorizontal();
-        }
         #endregion
     }
 }
